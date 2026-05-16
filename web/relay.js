@@ -63,15 +63,19 @@ module.exports = async io => {
             const missingUserIds = db.filterUncachedIds('user', Array.from(uniqueUserIds));
             const missingMapIds = db.filterUncachedIds('beatmap', Array.from(uniqueMapIds));
 
+            const userCachePercent = Math.round((missingUserIds.length / uniqueUserIds.size) * 100);
+            const mapCachePercent = Math.round((missingMapIds.length / uniqueMapIds.size) * 100);
+            utils.log(
+                `Fetching data for ${missingUserIds.length} users and ${missingMapIds.length} beatmaps (users ${userCachePercent}%, maps ${mapCachePercent}% cached)...`
+            );
+
             // Get users
-            utils.log(`Fetching data for ${missingUserIds.length} users...`);
             const resUsers = await osu.get('/users', { ids: missingUserIds });
             for (const user of resUsers.users) {
                 db.addToCache('user', user.id, user);
             }
 
             // Get maps
-            utils.log(`Fetching data for ${missingMapIds.length} beatmaps...`);
             const resMaps = await osu.get('/beatmaps', { ids: missingMapIds });
             for (const map of resMaps.beatmaps) {
                 db.addToCache('beatmap', map.id, map);
