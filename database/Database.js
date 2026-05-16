@@ -100,6 +100,12 @@ class Database {
         // Open database
         instance.db = sqlite3(dbFile);
 
+        // Set pragmas
+        instance.db.pragma('journal_mode = WAL');
+        instance.db.pragma('busy_timeout = 15000');
+        instance.db.pragma('synchronous = NORMAL');
+        instance.db.pragma('auto_vacuum = INCREMENTAL');
+
         // Execute migrations
         instance.#migrate(migrationsDir);
 
