@@ -8,7 +8,6 @@
  */
 
 require('dotenv').config({ quiet: true });
-const OSC_BASE_URL = process.env.OSC_BASE_URL ?? 'https://osc.kaysting.dev';
 
 const socketIoClient = require('socket.io-client');
 const osuApi = require('../lib/OsuAPIv2');
@@ -22,8 +21,13 @@ module.exports = async io => {
         clientSecret: process.env.OSU_CLIENT_SECRET
     });
 
+    // Listen for new clients
+    io.on('connection', socket => {
+        utils.log(`Socket ${socket.id} connected (${io.engine.clientsCount} clients connected)`);
+    });
+
     // Initialize client
-    const socket = socketIoClient(OSC_BASE_URL, {
+    const socket = socketIoClient(process.env.OSC_BASE_URL ?? 'https://osc.kaysting.dev', {
         path: '/ws',
         transports: ['websocket'] // avoid http polling
     });
@@ -92,6 +96,12 @@ module.exports = async io => {
                 const user = db.readFromCache('user', score.user_id);
                 const beatmap = db.readFromCache('beatmap', score.beatmap_id);
 
+                const modes = {
+                    0: 'osu',
+                    1: 'taiko',
+                    2: 'catch',
+                    3: 'mania'
+                };
                 scoresMinimal.push({
                     user: {
                         name: user.username,
@@ -111,7 +121,8 @@ module.exports = async io => {
                     beatmapset: {
                         title: beatmap.beatmapset.title,
                         artist: beatmap.beatmapset.artist,
-                        mapper: beatmap.beatmapset.creator
+                        mapper: beatmap.beatmapset.creator,
+                        cover_url: beatmap.beatmapset.covers['cover@2x']
                     },
                     score: {
                         time_ended: new Date(score.ended_at),
@@ -121,21 +132,14 @@ module.exports = async io => {
                         score_standardized: score.total_score,
                         score_classic: score.classic_total_score,
                         combo: score.max_combo,
-                        mods: score.mods
+                        mods: score.mods,
+                        mode: modes[score.ruleset_id]
                     }
                 });
-
-                const modes = {
-                    0: 'osu!',
-                    1: 'osu!taiko',
-                    2: 'osu!catch',
-                    3: 'osu!mania'
-                };
-                const scoreLog = `${score.user.username} set a ${(score.accuracy * 100).toFixed(2)}% ${score.rank} rank on map ${score.beatmap.beatmapset.artist} - ${score.beatmap.beatmapset.title} [${score.beatmap.version}] (${modes[score.ruleset_id]})`;
             }
 
             // Broadcast scores
-            io.emit(scoresMinimal);
+            io.emit('scores', scoresMinimal);
             utils.log(`Broadcasted ${scores.length} scores`);
         } catch (error) {
             utils.log(`Error processing scores:`, error);
