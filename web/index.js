@@ -22,7 +22,7 @@ const io = new socketIo.Server(server, {
 });
 
 // Register Express routes
-require('./web')(io);
+require('./web')(app);
 
 // Start score relay
 require('./relay')(io);

@@ -5,7 +5,12 @@
  */
 
 const path = require('path');
+const express = require('express');
 
+/**
+ * Set up the Express app.
+ * @param {express.Application} app
+ */
 module.exports = app => {
     // Set up EJS for templating
     app.set('view engine', 'ejs');
@@ -13,4 +18,19 @@ module.exports = app => {
 
     // Trust proxy if behind one
     app.set('trust proxy', 1);
+
+    // Log requests
+    app.use((req, res, next) => {
+        console.log(`[${req.ip}]`, req.method, req.originalUrl);
+        next();
+    });
+
+    // Handle static assets
+    app.use(express.static('public'));
+
+    // Handle main page
+    app.get('/', (req, res) => {});
+
+    // Handle 404
+    app.use((req, res) => {});
 };
