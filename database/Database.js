@@ -79,6 +79,10 @@ class Database {
      * These files are expected to be sortable, ideally starting with 0-padded numbers (`0001`, `0002`, `0013`, etc.).
      *
      * Defaults to `migrations`.
+     *
+     * @template T
+     * @this {new () => T}
+     * @returns {T}
      */
     static open(options = {}) {
         // Collect options
@@ -121,7 +125,7 @@ class Database {
      */
     get(sql, params = {}, col) {
         const res = this.#getStmt(sql).get(params);
-        if (col) return res[col] ?? null;
+        if (col) return res?.[col] ?? null;
         return res;
     }
 

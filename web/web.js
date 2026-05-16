@@ -6,6 +6,7 @@
 
 const path = require('path');
 const express = require('express');
+const utils = require('../lib/utils');
 
 /**
  * Set up the Express app.
@@ -21,7 +22,7 @@ module.exports = app => {
 
     // Log requests
     app.use((req, res, next) => {
-        console.log(`[${req.ip}]`, req.method, req.originalUrl);
+        utils.log(`[${req.ip}]`, req.method, req.originalUrl);
         next();
     });
 
@@ -33,4 +34,7 @@ module.exports = app => {
 
     // Handle 404
     app.use((req, res) => {});
+
+    // Handle errors
+    app.use((err, req, res, next) => {});
 };
