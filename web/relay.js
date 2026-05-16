@@ -44,6 +44,7 @@ module.exports = async io => {
     // We use this batch size to ensure we aren't fetching more than the max
     // number of users/maps at once from the osu api
     const processScores = async () => {
+        // Get batch of scores and stop if there are none
         const scores = pendingScores.splice(0, 50);
         if (!scores.length) {
             setTimeout(processScores, 250);
@@ -85,10 +86,44 @@ module.exports = async io => {
                 }
             }
 
-            // Assign props to scores
+            // Get data from cache and build front-end score object
+            const scoresMinimal = [];
             for (const score of scores) {
-                score.user = db.readFromCache('user', score.user_id);
-                score.beatmap = db.readFromCache('beatmap', score.beatmap_id);
+                const user = db.readFromCache('user', score.user_id);
+                const beatmap = db.readFromCache('beatmap', score.beatmap_id);
+
+                scoresMinimal.push({
+                    user: {
+                        name: user.username,
+                        country: user.country,
+                        avatar_url: user.avatar_url,
+                        cover_url: user.cover.url,
+                        team: user.team
+                    },
+                    beatmap: {
+                        version: beatmap.version,
+                        cs: beatmap.cs,
+                        ar: beatmap.ar,
+                        od: beatmap.accuracy,
+                        hp: beatmap.drain,
+                        length: beatmap.total_length
+                    },
+                    beatmapset: {
+                        title: beatmap.beatmapset.title,
+                        artist: beatmap.beatmapset.artist,
+                        mapper: beatmap.beatmapset.creator
+                    },
+                    score: {
+                        time_ended: new Date(score.ended_at),
+                        accuracy: score.accuracy * 100,
+                        rank: score.rank,
+                        pp: score.pp || null,
+                        score_standardized: score.total_score,
+                        score_classic: score.classic_total_score,
+                        combo: score.max_combo,
+                        mods: score.mods
+                    }
+                });
 
                 const modes = {
                     0: 'osu!',
@@ -100,6 +135,7 @@ module.exports = async io => {
             }
 
             // Broadcast scores
+            io.emit(scoresMinimal);
             utils.log(`Broadcasted ${scores.length} scores`);
         } catch (error) {
             utils.log(`Error processing scores:`, error);
