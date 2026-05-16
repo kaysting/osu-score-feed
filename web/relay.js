@@ -89,7 +89,7 @@ module.exports = async io => {
                     3: 'osu!mania'
                 };
                 console.log(
-                    `User ${score.user.username} just got a ${(score.accuracy * 100).toFixed(2)}% ${score.rank} rank on map ${score.beatmap.beatmapset.artist} - ${score.beatmap.beatmapset.title} [${score.beatmap.beatmapset.title}] (${modes[score.ruleset_id]})`
+                    `User ${score.user.username} just got a ${(score.accuracy * 100).toFixed(2)}% ${score.rank} rank on map ${score.beatmap.beatmapset.artist} - ${score.beatmap.beatmapset.title} [${score.beatmap.version}] (${modes[score.ruleset_id]})`
                 );
             }
         } catch (error) {
