@@ -19,11 +19,11 @@ class OsuScoreFeedDatabase extends Database {
     /**
      * Delete API cache entries saved before a certain threshold.
      * @param {string} type Data type.
-     * @param {number} olderThanMs Delete entries older than this number of milliseconds.
+     * @param {number} maxAgeMs Delete entries older than this number of milliseconds.
      * @returns Run result.
      */
-    purgeCache(type, olderThanMs = 1000 * 60 * 60 * 24) {
-        const minTimestamp = Date.now() - olderThanMs;
+    purgeCache(type, maxAgeMs = 1000 * 60 * 60 * 24) {
+        const minTimestamp = Date.now() - maxAgeMs;
         return this.run(`DELETE FROM api_cache WHERE type = ? AND time_saved < ?`, [type, minTimestamp]);
     }
 
