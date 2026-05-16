@@ -89,7 +89,7 @@ module.exports = async io => {
                     3: 'osu!mania'
                 };
                 console.log(
-                    `User ${score.user.username} just got a ${(score.accuracy * 100).toFixed(2)}% ${score.rank} rank on map ${score.beatmap.beatmapset.artist} - ${score.beatmap.beatmapset.title} [${score.beatmap.version}] (${modes[score.ruleset_id]})`
+                    `${score.user.username} set a ${(score.accuracy * 100).toFixed(2)}% ${score.rank} rank on map ${score.beatmap.beatmapset.artist} - ${score.beatmap.beatmapset.title} [${score.beatmap.version}] (${modes[score.ruleset_id]})`
                 );
             }
         } catch (error) {
@@ -99,4 +99,12 @@ module.exports = async io => {
         setTimeout(processScores, 1000);
     };
     processScores();
+
+    const purgeCache = () => {
+        const ONE_DAY = 1000 * 60 * 60 * 24;
+        db.purgeCache('user', ONE_DAY);
+        db.purgeCache('beatmap', ONE_DAY);
+        setTimeout(purgeCache, 1000 * 60);
+    };
+    purgeCache();
 };
