@@ -49,9 +49,11 @@ class OsuScoreFeedDatabase extends Database {
      * @param {(string|number)[]} ids List of IDs.
      */
     filterUncachedIds(type, ids) {
-        const cachedIds = this.all(`SELECT id FROM api_cache WHERE id IN (${ids.map(id => '?').join(', ')})`, ids).map(
-            e => e.id
-        );
+        const cachedIds = this.all(
+            `SELECT id FROM api_cache
+            WHERE type = ? AND id IN (${ids.map(id => '?').join(', ')})`,
+            [type, ...ids]
+        ).map(e => e.id);
         const cachedIdsSet = new Set(cachedIds);
         return ids.filter(id => !cachedIdsSet.has(id));
     }

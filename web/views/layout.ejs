@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title><%= (title ? `${title} - ` : '') + metaSiteName %></title>
+
+        <meta name="theme-color" content="<%= metaThemeColor %>" />
+        <meta property="og:site_name" content="<%= metaSiteName %>" />
+        <meta property="og:title" content="<%= metaTitle %>" />
+        <meta property="og:description" content="<%= metaDescription %>" />
+        <meta name="description" content="<%= metaDescription %>" />
+        <% if (metaImage) { %>
+            <meta property="og:image" content="<%= metaImage %>" />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
+            <meta name="twitter:image" content="<%= metaImage %>" />
+            <meta name="twitter:card" content="summary_large_image" />
+        <% } %>
+
+        <link rel="icon" href="/assets/images/logo.png">
+
+        <link rel="stylesheet" href="https://kaysting.dev/assets/css/material-symbols.css" />
+        <link rel="stylesheet" href="https://kaysting.dev/assets/css/base.css" />
+        <link rel="stylesheet" href="https://kaysting.dev/assets/css/utils.css" />
+
+        <style>
+            :root {
+                --c-base-hue: 330;
+                --c-base-sat: 10%;
+                --c-accent-hue: 330;
+                --c-accent-sat: 60%;
+            }
+        </style>
+
+        <script src="https://kaysting.dev/assets/js/base.js"></script>
+    </head>
+    <body>
+        <%- body %>
+    </body>
+</html>

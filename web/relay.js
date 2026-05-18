@@ -48,9 +48,11 @@ module.exports = async io => {
     // We use this batch size to ensure we aren't fetching more than the max
     // number of users/maps at once from the osu api
     const processScores = async () => {
-        // Get batch of scores and stop if there are none
+        // Get batch of scores
         const scores = pendingScores.splice(0, 50);
-        if (!scores.length) {
+
+        // Stop if there aren't any scores or if there aren't any connected clients
+        if (scores.length == 0 || io.engine.clientsCount == 0) {
             setTimeout(processScores, 250);
             return;
         }
@@ -68,14 +70,17 @@ module.exports = async io => {
             const missingUserIds = db.filterUncachedIds('user', Array.from(uniqueUserIds));
             const missingMapIds = db.filterUncachedIds('beatmap', Array.from(uniqueMapIds));
 
-            const userCachePercent = Math.round((missingUserIds.length / uniqueUserIds.size) * 100);
-            const mapCachePercent = Math.round((missingMapIds.length / uniqueMapIds.size) * 100);
-            utils.log(
-                `Fetching data for ${missingUserIds.length} users and ${missingMapIds.length} beatmaps (${userCachePercent}% of users and ${mapCachePercent}% of maps are cached)...`
-            );
+            // Only log if there's stuff we need to fetch
+            if (missingUserIds.length > 0 && missingMapIds.length > 0) {
+                const userCachePercent = 100 - Math.round((missingUserIds.length / uniqueUserIds.size) * 100);
+                const mapCachePercent = 100 - Math.round((missingMapIds.length / uniqueMapIds.size) * 100);
+                utils.log(
+                    `Fetching data for ${missingUserIds.length} users and ${missingMapIds.length} beatmaps (${userCachePercent}% of users and ${mapCachePercent}% of maps are cached)...`
+                );
+            }
 
             // Get users
-            if (missingUserIds.length) {
+            if (missingUserIds.length > 0) {
                 const resUsers = await osu.get('/users', { ids: missingUserIds });
                 for (const user of resUsers.users) {
                     db.addToCache('user', user.id, user);
@@ -83,7 +88,7 @@ module.exports = async io => {
             }
 
             // Get maps
-            if (missingMapIds) {
+            if (missingMapIds.length > 0) {
                 const resMaps = await osu.get('/beatmaps', { ids: missingMapIds });
                 for (const map of resMaps.beatmaps) {
                     db.addToCache('beatmap', map.id, map);
@@ -96,14 +101,36 @@ module.exports = async io => {
                 const user = db.readFromCache('user', score.user_id);
                 const beatmap = db.readFromCache('beatmap', score.beatmap_id);
 
-                const modes = {
+                const modeString = {
                     0: 'osu',
                     1: 'taiko',
-                    2: 'catch',
+                    2: 'fruits',
                     3: 'mania'
-                };
-                scoresMinimal.push({
+                }[score.ruleset_id];
+                const scoreMinimal = {
+                    url: `https://osu.ppy.sh/scores/${score.id}`,
+                    id: score.id,
+                    time_ended: new Date(score.ended_at).toISOString(), // just to ensure consistent formatting
+                    mode: modeString,
+                    accuracy: utils.num(score.accuracy * 100, 2),
+                    rank: score.rank, // by lazer standards
+                    pp: utils.num(score.pp, 2) ?? null,
+                    score_standardized: score.total_score, // lazer standardized
+                    score_classic: score.classic_total_score, // lazer classic
+                    combo: score.max_combo,
+                    is_fc: score.is_perfect_combo, // by lazer standards
+                    mods: score.mods,
+                    hitcount: {
+                        perfect: score.statistics.perfect ?? 0,
+                        great: score.statistics.great ?? 0,
+                        good: score.statistics.good ?? 0,
+                        ok: score.statistics.ok ?? 0,
+                        meh: score.statistics.meh ?? 0,
+                        miss: score.statistics.miss ?? 0
+                    },
                     user: {
+                        url: `https://osu.ppy.sh/users/${user.id}`,
+                        id: user.id,
                         name: user.username,
                         country: user.country,
                         avatar_url: user.avatar_url,
@@ -111,36 +138,40 @@ module.exports = async io => {
                         team: user.team
                     },
                     beatmap: {
+                        url: `https://osu.ppy.sh/beatmapsets/${beatmap.beatmapset.id}#${modeString}/${beatmap.id}`,
+                        id: beatmap.id,
                         version: beatmap.version,
-                        cs: beatmap.cs,
-                        ar: beatmap.ar,
-                        od: beatmap.accuracy,
-                        hp: beatmap.drain,
-                        length: beatmap.total_length
+                        status: beatmap.status,
+                        cs: utils.num(beatmap.cs, 2),
+                        ar: utils.num(beatmap.ar, 2),
+                        od: utils.num(beatmap.accuracy, 2),
+                        hp: utils.num(beatmap.drain, 2),
+                        bpm: utils.num(beatmap.bpm, 2),
+                        length: beatmap.total_length,
+                        max_combo: beatmap.max_combo,
+                        stars: utils.num(beatmap.difficulty_rating, 2)
                     },
                     beatmapset: {
+                        url: `https://osu.ppy.sh/beatmapsets/${beatmap.beatmapset.id}`,
+                        id: beatmap.beatmapset.id,
                         title: beatmap.beatmapset.title,
                         artist: beatmap.beatmapset.artist,
                         mapper: beatmap.beatmapset.creator,
-                        cover_url: beatmap.beatmapset.covers['cover@2x']
-                    },
-                    score: {
-                        time_ended: new Date(score.ended_at),
-                        accuracy: score.accuracy * 100,
-                        rank: score.rank,
-                        pp: score.pp || null,
-                        score_standardized: score.total_score,
-                        score_classic: score.classic_total_score,
-                        combo: score.max_combo,
-                        mods: score.mods,
-                        mode: modes[score.ruleset_id]
+                        cover_url: beatmap.beatmapset.covers['cover@2x'],
+                        thumbnail_url: beatmap.beatmapset.covers['list@2x']
                     }
-                });
+                };
+                scoresMinimal.push(scoreMinimal);
+
+                // debug
+                if (user.username == 'kaysting') {
+                    console.log(JSON.stringify(scoreMinimal, null, 2));
+                }
             }
 
             // Broadcast scores
             io.emit('scores', scoresMinimal);
-            utils.log(`Broadcasted ${scores.length} scores`);
+            utils.log(`Broadcasted ${scores.length} scores to ${io.engine.clientsCount} clients`);
         } catch (error) {
             utils.log(`Error processing scores:`, error);
         }

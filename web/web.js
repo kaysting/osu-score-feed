@@ -6,6 +6,7 @@
 
 const path = require('path');
 const express = require('express');
+const layouts = require('express-ejs-layouts');
 const utils = require('../lib/utils');
 
 /**
@@ -20,21 +21,37 @@ module.exports = app => {
     // Trust proxy if behind one
     app.set('trust proxy', 1);
 
+    // Set locals
+    app.locals.title = 'Feed';
+    app.locals.metaSiteName = 'osu!feed';
+    app.locals.metaTitle = 'Real-time osu! score feed';
+    app.locals.metaDescription = `View and filter a live feed of new osu! scores. Limit your feed to certain players, maps, modes, mods, pp, and more.`;
+    app.locals.metaThemeColor = '#ebadcc';
+    app.locals.metaImage = '';
+
     // Log requests
     app.use((req, res, next) => {
-        utils.log(`[${req.ip}]`, req.method, req.originalUrl);
+        utils.log(req.ip, req.method, req.originalUrl);
         next();
     });
 
-    // Handle static assets
-    app.use(express.static('public'));
+    // Use global middleware
+    app.use(express.static(path.join(__dirname, 'public')));
+    app.use(layouts);
 
     // Handle main page
-    app.get('/', (req, res) => {});
+    app.get('/', (req, res) => {
+        res.render('pages/feed');
+    });
 
     // Handle 404
-    app.use((req, res) => {});
+    app.use((req, res) => {
+        res.status(404).end(`404 Not Found`);
+    });
 
     // Handle errors
-    app.use((err, req, res, next) => {});
+    app.use((err, req, res, next) => {
+        console.error(err);
+        res.status(500).end(`500 Internal Server Error`);
+    });
 };
