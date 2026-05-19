@@ -19,8 +19,8 @@ const starsToColor = stars => {
 
     const fgPoints = [
         { stars: 0, color: [0, 0, 0] },
-        { stars: 6.49999, color: [0, 0, 0] },
-        { stars: 6.5, color: [255, 217, 102] },
+        { stars: 6.69999, color: [0, 0, 0] },
+        { stars: 6.7, color: [255, 217, 102] },
         { stars: 8.99, color: [255, 217, 102] },
         { stars: 9, color: [246, 246, 85] },
         { stars: 10, color: [255, 127, 102] },
@@ -183,10 +183,17 @@ document.addEventListener('DOMContentLoaded', () => {
         elFilters.append(btnAddFilter);
 
         // Update query param in address bar
-        const newQuery = new URLSearchParams({
-            filtered: true, // the presence of this stops default user filters from being applied
-            ...userFilters
-        }).toString();
+        const params = { filtered: true };
+        for (const def of filterDefs) {
+            const value = userFilters[def.key];
+            if (value === undefined) continue;
+            if (def.type == 'set') {
+                params[def.key] = Array.from(value).join(',');
+            } else {
+                params[def.key] = value.toString();
+            }
+        }
+        const newQuery = new URLSearchParams(params).toString();
         window.history.replaceState(null, '', `?${newQuery}`);
 
         const getFilterButton = (label, onClick) => {
@@ -316,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
             elEmpty.remove();
             elFeed.insertAdjacentHTML('afterbegin', buildScoreHTML(score));
             initImageLoadStates(elFeed.firstElementChild);
-            setTimeout(displayNextScore, 25);
+            setTimeout(displayNextScore, 10);
         } else {
             setTimeout(displayNextScore, 500);
             while (elFeed.children.length > 500) {
