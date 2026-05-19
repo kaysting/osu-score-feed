@@ -158,7 +158,7 @@ module.exports = async io => {
                         artist: beatmap.beatmapset.artist,
                         mapper: beatmap.beatmapset.creator,
                         cover_url: beatmap.beatmapset.covers['cover@2x'],
-                        thumbnail_url: beatmap.beatmapset.covers['list@2x']
+                        thumbnail_url: beatmap.beatmapset.covers['list']
                     }
                 };
                 scoresMinimal.push(scoreMinimal);

@@ -1,0 +1,128 @@
+@keyframes scoreFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#scores .entry {
+    color: inherit;
+    border: 1px solid var(--c-border-default);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: scoreFadeIn 0.2s ease-out forwards;
+    transition: 0.1s ease-in-out;
+    line-height: 1.2;
+    font-weight: normal;
+}
+
+#scores .entry:hover {
+    text-decoration: none;
+    border-color: var(--c-action-primary);
+    box-shadow: 0px 0px 0px 2px var(--c-action-primary);
+    transition: none;
+}
+
+#scores .entry .pill {
+    --bg: #999;
+    --fg: black;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--bg);
+    color: var(--fg);
+    border-radius: 100px;
+    line-height: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+#scores .entry .pill .symbol {
+    font-size: 18px;
+    margin: -16px 0;
+}
+
+#scores .entry .map {
+    background: var(--c-bg-subsurface);
+    border-bottom: 1px solid var(--c-border-default);
+    padding: 8px;
+}
+
+#scores .entry .map .thumbnail {
+    width: 54px;
+    height: 54px;
+    border-radius: 12px;
+}
+
+#scores .entry .map .mode {
+    width: 16px;
+    height: 16px;
+}
+
+#scores .entry .map .status.ranked,
+#scores .entry .map .status.approved {
+    --bg: hsl(90, 100%, 70%);
+}
+
+#scores .entry .map .status.loved {
+    --bg: hsl(340, 100%, 70%);
+}
+
+#scores .entry .map .status.qualified {
+    --bg: hsl(200, 100%, 70%);
+}
+
+#scores .entry .map .status.pending {
+    --bg: hsl(30, 100%, 70%);
+}
+
+#scores .entry .score {
+    padding: 8px;
+}
+
+#scores .entry .score .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+}
+
+#scores .entry .score .flag {
+    height: 14px;
+    border-radius: 2px;
+}
+
+#scores .entry .score .rank {
+    height: 24px;
+}
+
+#scores .entry .score .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+#scores .entry .score .stat .name {
+    font-size: 12px;
+    color: var(--c-text-muted);
+    font-weight: 600;
+}
+
+#scores .entry .score .stat .value {
+    font-size: 18px;
+    color: var(--c-text-bright);
+    font-weight: 400;
+}
+
+#scores .entry .score .stat .value.max {
+    color: var(--c-success-70);
+}
+
+#scores .entry .score .stat .value.na {
+    color: var(--c-text-muted);
+}
