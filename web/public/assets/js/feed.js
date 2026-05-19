@@ -134,6 +134,7 @@ const filterDefs = [
 document.addEventListener('DOMContentLoaded', () => {
     // Get elements
     const btnAddFilter = $('#addFilter');
+    const elFilters = $('#filters');
     const btnClearFeed = $('#clearFeed');
     const elStatusCont = $('#statusCont');
     const elStatusSymbol = $('#statusSymbol');
@@ -150,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     for (const def of filterDefs) {
         // Set defaults
         if (def.default !== undefined) defaultFilters[def.key] = def.default;
-        if (def.userDefault !== undefined) userFilters[def.key] = def.userDefault;
+        if (def.userDefault !== undefined && !query.get('filtered')) userFilters[def.key] = def.userDefault;
 
         // Collect query params
         switch (def.type) {
@@ -176,7 +177,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Function to render new filters and update the query string
-    const updateFilters = () => {};
+    const updateFilters = () => {
+        // Wipe filter UI
+        elFilters.innerHTML = '';
+        elFilters.append(btnAddFilter);
+
+        // Update query param in address bar
+        const newQuery = new URLSearchParams({
+            filtered: true, // the presence of this stops default user filters from being applied
+            ...userFilters
+        }).toString();
+        window.history.replaceState(null, '', `?${newQuery}`);
+
+        const getFilterButton = (label, onClick) => {
+            const btn = document.createElement('button');
+            btn.classList.add('btn', 'small', 'tertiary', 'outline');
+            btn.title = `Click to remove`;
+            btn.innerHTML = /*html*/ `
+                <span class="label">${escapeHTML(label)}</span>
+                <span class="symbol">close</span>
+            `;
+            btn.addEventListener('click', onClick);
+            return btn;
+        };
+
+        // Render new filter buttons
+        for (const def of filterDefs) {
+            const value = userFilters[def.key];
+            if (value === undefined) continue;
+            let btn;
+            if (def.type == 'set') {
+                for (const v of value) {
+                    elFilters.append(
+                        getFilterButton(`${def.label}: ${v}`, () => {
+                            value.delete(v);
+                            if (value.size == 0) delete userFilters[def.key];
+                            updateFilters();
+                        })
+                    );
+                }
+            } else {
+                elFilters.append(
+                    getFilterButton(`${def.label}: ${value}`, () => {
+                        delete userFilters[def.key];
+                        updateFilters();
+                    })
+                );
+            }
+        }
+    };
+    updateFilters();
 
     // Function to build an element from score data
     const buildScoreHTML = score => {
