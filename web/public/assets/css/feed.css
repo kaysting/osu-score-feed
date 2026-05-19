@@ -15,7 +15,7 @@
     border: 1px solid var(--c-border-default);
     border-radius: 16px;
     overflow: hidden;
-    animation: scoreFadeIn 0.2s ease-out forwards;
+    animation: scoreFadeIn 0.3s ease-out forwards;
     transition: 0.1s ease-in-out;
     line-height: 1.2;
     font-weight: normal;

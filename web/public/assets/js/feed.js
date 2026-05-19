@@ -55,85 +55,155 @@ const starsToColor = stars => {
     };
 };
 
-const filterDefs = [
-    {
-        key: 'users',
-        label: 'Player',
-        type: 'set',
-        default: new Set(),
-        test: (score, set) => set.size === 0 || set.has(score.user.id.toString()) || set.has(score.user.name)
-    },
-    {
-        key: 'modes',
-        label: 'Mode',
-        type: 'set',
-        default: new Set(),
-        test: (score, set) => set.size === 0 || set.has(score.mode)
-    },
-    {
-        key: 'statuses',
-        label: 'Status',
-        type: 'set',
-        default: new Set(),
-        test: (score, set) => set.size === 0 || set.has(score.beatmap.status)
-    },
-    {
-        key: 'acc_min',
-        label: 'Min acc',
-        type: 'number',
-        default: 0,
-        userDefault: 95,
-        test: (score, value) => score.accuracy > value
-    },
-    {
-        key: 'acc_max',
-        label: 'Max acc',
-        type: 'number',
-        default: 100,
-        test: (score, value) => score.accuracy < value
-    },
-    {
-        key: 'stars_min',
-        label: 'Min stars',
-        type: 'number',
-        default: 0,
-        userDefault: 5,
-        test: (score, value) => score.beatmap.stars > value
-    },
-    {
-        key: 'stars_max',
-        label: 'Max stars',
-        type: 'number',
-        default: 9999,
-        test: (score, value) => score.beatmap.stars < value
-    },
-    {
-        key: 'pp_min',
-        label: 'Min pp',
-        type: 'number',
-        default: 0,
-        userDefault: 200,
-        test: (score, value) => score.pp > value
-    },
-    {
-        key: 'pp_max',
-        label: 'Max pp',
-        type: 'number',
-        default: 9999,
-        test: (score, value) => score.pp < value
-    },
-    {
-        key: 'fcs_only',
-        label: 'FCs only',
-        type: 'bool',
-        default: false,
-        test: (score, value) => score.is_fc == value
+const getFilterDefs = async () => {
+    // Fetch and format mod data
+    const data = await (await fetch('/assets/data/mods.json')).json();
+    const mods = {};
+    for (const mode of data) {
+        for (const mod of mode.Mods) {
+            if (!mods[mod.Acronym])
+                mods[mod.Acronym] = {
+                    acronym: mod.Acronym,
+                    name: mod.Name,
+                    type: mod.Type,
+                    settings: {}
+                };
+            for (const setting of mod.Settings) {
+                mods[mod.Acronym].settings[setting.Name] = {
+                    key: setting.Name,
+                    label: setting.Label
+                };
+            }
+        }
     }
-];
 
-document.addEventListener('DOMContentLoaded', () => {
+    // Build filter defs
+    const filterDefs = [
+        {
+            key: 'modes',
+            label: 'Mode',
+            header: 'Mode',
+            type: 'set',
+            default: new Set(),
+            test: (score, set) => set.size === 0 || set.has(score.mode),
+            options: [
+                { label: 'osu!', value: 'osu' },
+                { label: 'osu!taiko', value: 'taiko' },
+                { label: 'osu!catch', value: 'fruits' },
+                { label: 'osu!mania', value: 'mania' }
+            ]
+        },
+        {
+            key: 'mods',
+            label: 'Mod',
+            header: 'Mods',
+            type: 'set',
+            default: new Set(),
+            test: (score, set) => set.size === 0 || set.has(score.beatmap.status),
+            options: Object.values(mods).map(mod => ({
+                label: mod.name,
+                value: mod.acronym
+            }))
+        },
+        {
+            key: 'statuses',
+            label: 'Status',
+            header: 'Map status',
+            type: 'set',
+            default: new Set(),
+            test: (score, set) => set.size === 0 || set.has(score.beatmap.status),
+            options: [
+                { label: 'Ranked', value: 'ranked' },
+                { label: 'Approved', value: 'approved' },
+                { label: 'Loved', value: 'loved' },
+                { label: 'Qualified', value: 'qualified' },
+                { label: 'Pending', value: 'pending' },
+                { label: 'WIP', value: 'wip' },
+                { label: 'Graveyard', value: 'graveyard' }
+            ]
+        },
+        {
+            key: 'users',
+            label: 'Player',
+            header: 'Players',
+            type: 'set',
+            default: new Set(),
+            test: (score, set) => set.size === 0 || set.has(score.user.id.toString()) || set.has(score.user.name),
+            placeholder: 'Enter a user ID or name...'
+        },
+        {
+            key: 'acc_min',
+            label: 'Min acc',
+            header: 'Minimum accuracy',
+            type: 'number',
+            default: 0,
+            userDefault: 95,
+            test: (score, value) => score.accuracy > value,
+            placeholder: '75'
+        },
+        {
+            key: 'acc_max',
+            label: 'Max acc',
+            header: 'Maximum accuracy',
+            type: 'number',
+            default: 100,
+            test: (score, value) => score.accuracy < value,
+            placeholder: '100'
+        },
+        {
+            key: 'stars_min',
+            label: 'Min stars',
+            header: 'Minimum stars',
+            type: 'number',
+            default: 0,
+            userDefault: 5,
+            test: (score, value) => score.beatmap.stars > value,
+            placeholder: '5'
+        },
+        {
+            key: 'stars_max',
+            label: 'Max stars',
+            header: 'Maximum stars',
+            type: 'number',
+            default: 9999,
+            test: (score, value) => score.beatmap.stars < value,
+            placeholder: '999'
+        },
+        {
+            key: 'pp_min',
+            label: 'Min pp',
+            header: 'Minimum pp',
+            type: 'number',
+            default: 0,
+            userDefault: 200,
+            test: (score, value) => score.pp > value,
+            placeholder: '200'
+        },
+        {
+            key: 'pp_max',
+            label: 'Max pp',
+            header: 'Maximum pp',
+            type: 'number',
+            default: 9999,
+            test: (score, value) => score.pp < value,
+            placeholder: '2000'
+        },
+        {
+            key: 'fcs_only',
+            label: 'FCs only',
+            header: 'Only show FCs',
+            type: 'bool',
+            default: false,
+            test: (score, value) => score.is_fc == value
+        }
+    ];
+
+    return filterDefs;
+};
+
+document.addEventListener('DOMContentLoaded', async () => {
     // Get elements
-    const btnAddFilter = $('#addFilter');
+    const btnEditFilters = $('#editFilters');
     const elFilters = $('#filters');
     const btnClearFeed = $('#clearFeed');
     const elStatusCont = $('#statusCont');
@@ -143,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const elEmpty = $('#scores .empty');
 
     // Define filter objects
+    const filterDefs = await getFilterDefs();
     const defaultFilters = {};
     const userFilters = {};
 
@@ -180,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateFilters = () => {
         // Wipe filter UI
         elFilters.innerHTML = '';
-        elFilters.append(btnAddFilter);
+        elFilters.append(btnEditFilters);
 
         // Update query param in address bar
         const params = { filtered: true };
@@ -234,6 +305,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     updateFilters();
+
+    btnEditFilters.addEventListener('click', () => {
+        const el = createElement('div.flex.col.gap-8#filterForm');
+        for (const def of filterDefs) {
+            el.insertAdjacentHTML(
+                'beforeend',
+                /*html*/ `
+                    <section class="card flex col gap-8" style="padding: 12px">
+                        <h3 class="no-margin text-16 text-semibold text-bright">${def.header || def.label}</h3>
+                    </section>
+                `
+            );
+        }
+        showModal('Feed Filters', el, [
+            {
+                label: 'Cancel',
+                class: 'text'
+            },
+            {
+                label: 'Apply',
+                onClick: () => {}
+            }
+        ]);
+    });
 
     // Function to build an element from score data
     const buildScoreHTML = score => {
@@ -316,17 +411,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to recursively add scores to the UI from the pending array
     const scoresPendingDisplay = [];
+    let delayBetweenScores = 0;
+    let isScoreQueueEmpty = true;
     const displayNextScore = () => {
+        // Try again in 500ms if the window is hidden
         if (document.hidden) return setTimeout(displayNextScore, 500);
+
+        // Get the next score
         const score = scoresPendingDisplay.shift();
         if (score) {
+            // Remove the empty element
             elEmpty.remove();
+            // Append the score and init image loading states
             elFeed.insertAdjacentHTML('afterbegin', buildScoreHTML(score));
             initImageLoadStates(elFeed.firstElementChild);
-            setTimeout(displayNextScore, 10);
+
+            // If the queue was empty before this score,
+            // set the delay between score displays so all queued scores
+            // are displayed within 500ms
+            if (isScoreQueueEmpty) {
+                delayBetweenScores = 500 / scoresPendingDisplay.length;
+                isScoreQueueEmpty = false;
+            }
+            setTimeout(displayNextScore, delayBetweenScores);
         } else {
+            isScoreQueueEmpty = true;
             setTimeout(displayNextScore, 500);
-            while (elFeed.children.length > 500) {
+            while (elFeed.children.length > 100) {
                 elFeed.lastElementChild.remove();
             }
         }
