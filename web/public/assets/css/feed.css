@@ -1,7 +1,7 @@
 #scores .entryCont {
     display: grid;
     grid-template-rows: 1fr;
-    padding-bottom: 12px;
+    padding-bottom: 8px;
     opacity: 1;
     transition:
         grid-template-rows 0.3s ease-in-out,
@@ -88,6 +88,10 @@
     --bg: hsl(30, 100%, 70%);
 }
 
+#scores a .map .mods img {
+    height: 24px;
+}
+
 #scores a .score {
     padding: 8px;
 }
@@ -100,7 +104,7 @@
 
 #scores a .score .flag {
     height: 14px;
-    border-radius: 2px;
+    border-radius: 4px;
 }
 
 #scores a .score .rank {
