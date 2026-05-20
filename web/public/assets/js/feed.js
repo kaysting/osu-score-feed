@@ -1,4 +1,3 @@
-import mods from './data/mods.js';
 import filterDefs from './config/feedFilterDefinitions.js';
 import buildScoreHTML from './components/scoreCard.js';
 
