@@ -334,7 +334,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const buildScoreHTML = score => {
         const color = starsToColor(score.beatmap.stars);
         return /*html*/ `
-            <a href="${score.url}" target="_blank" class="entry">
+        <div class="entryCont new">
+            <a href="${score.url}" target="_blank" class="flex col">
                 <div class="map flex row gap-12">
                     <img src="${score.beatmapset.thumbnail_url}" alt="Beatmap image" class="thumbnail">
                     <div class="flex col gap-4">
@@ -406,6 +407,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 </div>
             </a>
+        </div>
         `;
     };
 
@@ -424,7 +426,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             elEmpty.remove();
             // Append the score and init image loading states
             elFeed.insertAdjacentHTML('afterbegin', buildScoreHTML(score));
-            initImageLoadStates(elFeed.firstElementChild);
+            const el = elFeed.firstElementChild;
+            initImageLoadStates(el);
+
+            // Force reflow and animate in
+            void el.offsetHeight;
+            el.classList.remove('new');
 
             // If the queue was empty before this score,
             // set the delay between score displays so all queued scores

@@ -1,34 +1,40 @@
-@keyframes scoreFadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+#scores .entryCont {
+    display: grid;
+    grid-template-rows: 1fr;
+    padding-bottom: 12px;
+    opacity: 1;
+    transition:
+        grid-template-rows 0.3s ease-in-out,
+        padding-bottom 0.3s ease-in-out,
+        opacity 0.3s ease-in-out;
 }
 
-#scores .entry {
+#scores .entryCont.new {
+    grid-template-rows: 0fr;
+    padding-bottom: 0px;
+    opacity: 0;
+}
+
+#scores a {
     color: inherit;
     border: 1px solid var(--c-border-default);
     border-radius: 16px;
     overflow: hidden;
-    animation: scoreFadeIn 0.3s ease-out forwards;
-    transition: 0.1s ease-in-out;
     line-height: 1.2;
     font-weight: normal;
+    min-height: 0;
+    overflow: hidden;
+    transition: 0.1s ease-in-out;
 }
 
-#scores .entry:hover {
+#scores a:hover {
     text-decoration: none;
     border-color: var(--c-action-primary);
     box-shadow: 0px 0px 0px 2px var(--c-action-primary);
     transition: none;
 }
 
-#scores .entry .pill {
+#scores a .pill {
     --bg: #999;
     --fg: black;
     padding: 2px 6px;
@@ -42,88 +48,88 @@
     flex-shrink: 0;
 }
 
-#scores .entry .pill .symbol {
+#scores a .pill .symbol {
     font-size: 18px;
     margin: -8px 0;
     margin-bottom: -9px;
 }
 
-#scores .entry .map {
+#scores a .map {
     background: var(--c-bg-subsurface);
     border-bottom: 1px solid var(--c-border-default);
     padding: 8px;
 }
 
-#scores .entry .map .thumbnail {
+#scores a .map .thumbnail {
     width: 54px;
     height: 54px;
     border-radius: 12px;
 }
 
-#scores .entry .map .mode {
+#scores a .map .mode {
     width: 16px;
     height: 16px;
 }
 
-#scores .entry .map .status.ranked,
-#scores .entry .map .status.approved {
+#scores a .map .status.ranked,
+#scores a .map .status.approved {
     --bg: hsl(90, 100%, 70%);
 }
 
-#scores .entry .map .status.loved {
+#scores a .map .status.loved {
     --bg: hsl(340, 100%, 70%);
 }
 
-#scores .entry .map .status.qualified {
+#scores a .map .status.qualified {
     --bg: hsl(200, 100%, 70%);
 }
 
-#scores .entry .map .status.pending {
+#scores a .map .status.pending {
     --bg: hsl(30, 100%, 70%);
 }
 
-#scores .entry .score {
+#scores a .score {
     padding: 8px;
 }
 
-#scores .entry .score .avatar {
+#scores a .score .avatar {
     width: 36px;
     height: 36px;
     border-radius: 8px;
 }
 
-#scores .entry .score .flag {
+#scores a .score .flag {
     height: 14px;
     border-radius: 2px;
 }
 
-#scores .entry .score .rank {
+#scores a .score .rank {
     height: 24px;
 }
 
-#scores .entry .score .stat {
+#scores a .score .stat {
     display: flex;
     flex-direction: column;
     gap: 4px;
     white-space: nowrap;
 }
 
-#scores .entry .score .stat .name {
+#scores a .score .stat .name {
     font-size: 12px;
     color: var(--c-text-muted);
     font-weight: 600;
 }
 
-#scores .entry .score .stat .value {
+#scores a .score .stat .value {
     font-size: 18px;
     color: var(--c-text-bright);
     font-weight: 400;
 }
 
-#scores .entry .score .stat .value.max {
+#scores a .score .stat .value.max {
     color: var(--c-success-70);
 }
 
-#scores .entry .score .stat .value.na {
+#scores a .score .stat .value.na {
     color: var(--c-text-muted);
 }
