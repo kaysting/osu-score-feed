@@ -56,6 +56,19 @@ const statuses = [
     { label: 'Graveyard', value: 'graveyard' }
 ];
 
+/** @type {FilterValueOption[]} */
+const ranks = [
+    { label: 'SS', value: 'X' },
+    { label: 'Silver SS', value: 'XH' },
+    { label: 'Silver S', value: 'SH' },
+    { label: 'S', value: 'S' },
+    { label: 'A', value: 'A' },
+    { label: 'B', value: 'B' },
+    { label: 'C', value: 'C' },
+    { label: 'D', value: 'D' },
+    { label: 'F', value: 'F' }
+];
+
 /**
  * Score feed filter definitions.
  * @type {FilterDefinition[]}
@@ -107,7 +120,25 @@ const filterDefs = [
         type: 'set',
         default: new Set(),
         test: (score, set) => set.size === 0 || set.has(score.user.id.toString()) || set.has(score.user.name),
-        placeholder: 'Enter a user ID or name...'
+        placeholder: 'Enter user ID, name, or profile URL'
+    },
+    {
+        key: 'maps',
+        label: 'Map',
+        header: 'Beatmaps',
+        type: 'set',
+        default: new Set(),
+        test: (score, set) => set.size === 0 || set.has(score.beatmap.id.toString()),
+        placeholder: 'Enter beatmap ID or URL'
+    },
+    {
+        key: 'ranks',
+        label: 'Rank',
+        header: 'Ranks',
+        type: 'set',
+        default: new Set(),
+        getDisplayValue: value => ranks.find(e => e.value == value.toUpperCase())?.label || value,
+        test: (score, set) => set.size === 0 || set.has(score.rank.toUpperCase())
     },
     {
         key: 'acc_min',

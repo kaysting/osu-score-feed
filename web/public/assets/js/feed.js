@@ -176,20 +176,8 @@ const displayNextScore = () => {
 };
 displayNextScore();
 
-// Connect to the socket and update live status based on connection status
+// Connect to the socket
 const client = io();
-client.on('connect', conn => {
-    console.log(`Connected to socket!`);
-    elStatusCont.style.color = 'var(--c-action-success)';
-    elStatusSymbol.innerText = 'language';
-    elStatusText.innerText = 'Live';
-});
-client.on('disconnect', conn => {
-    console.log(`Disconnected from socket!`);
-    elStatusCont.style.color = 'var(--c-action-danger)';
-    elStatusSymbol.innerText = 'warning';
-    elStatusText.innerText = 'Offline';
-});
 
 // Listen for incoming scores
 let lastScoreSpeedCheck = Date.now();
@@ -228,6 +216,22 @@ client.on('scores', scores => {
     while (scoresPendingDisplay.length > 75) {
         scoresPendingDisplay.shift();
     }
+});
+
+client.on('connect', conn => {
+    console.log(`Connected to socket!`);
+    elStatusCont.style.color = 'var(--c-action-success)';
+    elStatusSymbol.innerText = 'language';
+    elStatusText.innerText = 'Live';
+});
+
+client.on('disconnect', conn => {
+    console.log(`Disconnected from socket!`);
+    elStatusCont.style.color = 'var(--c-action-danger)';
+    elStatusSymbol.innerText = 'warning';
+    elStatusText.innerText = 'Offline';
+    lastScoreSpeedCheck = Date.now();
+    scoreSpeedCheckCount = 0;
 });
 
 // Empty the score feed and add back the empty element on clear

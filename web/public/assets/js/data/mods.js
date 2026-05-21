@@ -19,4 +19,6 @@ for (const mode of data) {
     }
 }
 
+console.log({ mods });
+
 export default mods;
