@@ -42,10 +42,10 @@ import mods from '../data/mods.js';
 
 /** @type {FilterValueOption[]} */
 const modes = [
-    { label: 'osu!standard', value: 'osu' },
-    { label: 'osu!taiko', value: 'taiko' },
-    { label: 'osu!catch', value: 'fruits' },
-    { label: 'osu!mania', value: 'mania' }
+    { label: 'osu!standard', value: 'osu', icon: '/assets/images/ruleset-icons/osu.svg' },
+    { label: 'osu!taiko', value: 'taiko', icon: '/assets/images/ruleset-icons/taiko.svg' },
+    { label: 'osu!catch', value: 'fruits', icon: '/assets/images/ruleset-icons/fruits.svg' },
+    { label: 'osu!mania', value: 'mania', icon: '/assets/images/ruleset-icons/mania.svg' }
 ];
 
 /** @type {FilterValueOption[]} */
@@ -214,7 +214,7 @@ const filterDefs = [
                 ];
                 const typeDiff = types.indexOf(a.type) - types.indexOf(b.type);
                 if (typeDiff != 0) return typeDiff;
-                return a.name > b.name ? 1 : -1;
+                return a.acronym > b.acronym ? 1 : -1;
             })
             .map(mod => ({
                 label: mod.name,

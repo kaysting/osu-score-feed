@@ -13,7 +13,8 @@ const COLOR_HUES = {
     DifficultyIncrease: 0,
     Automation: 200,
     Conversion: 255,
-    System: 45
+    System: 45,
+    Fun: 330
 };
 const COLOR_SATURATION = 100;
 const COLOR_BG_LIGHTNESS = 70;
@@ -23,7 +24,7 @@ const COLOR_FG_LIGHTNESS = 23;
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
 // Read mod data
-const modData = require('../web/public/assets/data/mods.json');
+const modData = require('../web/public/assets/js/data/mods.json');
 const mods = {};
 
 for (const mode of modData) {
