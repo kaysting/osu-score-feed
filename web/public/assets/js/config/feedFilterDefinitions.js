@@ -19,6 +19,8 @@ import mods from '../data/mods.js';
  * Filter value option.
  * @typedef {Object} FilterValueOption
  * @property {string} label The display text for this value.
+ * @property {string} icon A URL of an icon to use on this option.
+ * @property {boolean} iconOnly Whether or not only the icon should be shown for this option in the filter editor.
  * @property {any} value The actual value.
  */
 
@@ -35,11 +37,12 @@ import mods from '../data/mods.js';
  * @property {FilterValueOption[]} [options] An array of objects with `label` and `value` properties representing the valid values for this filter.
  *
  * These options will be explicitly selectable in the filter editor instead of a textbox when provided.
+ * @property {string} [placeholder] A placeholder for the input textbox if one exists.
  */
 
 /** @type {FilterValueOption[]} */
 const modes = [
-    { label: 'osu!', value: 'osu' },
+    { label: 'osu!standard', value: 'osu' },
     { label: 'osu!taiko', value: 'taiko' },
     { label: 'osu!catch', value: 'fruits' },
     { label: 'osu!mania', value: 'mania' }
@@ -58,15 +61,14 @@ const statuses = [
 
 /** @type {FilterValueOption[]} */
 const ranks = [
-    { label: 'SS', value: 'X' },
-    { label: 'Silver SS', value: 'XH' },
-    { label: 'Silver S', value: 'SH' },
-    { label: 'S', value: 'S' },
-    { label: 'A', value: 'A' },
-    { label: 'B', value: 'B' },
-    { label: 'C', value: 'C' },
-    { label: 'D', value: 'D' },
-    { label: 'F', value: 'F' }
+    { label: 'SS', value: 'X', icon: '/assets/images/ranks/X.svg' },
+    { label: 'Silver SS', value: 'XH', icon: '/assets/images/ranks/XH.svg' },
+    { label: 'Silver S', value: 'SH', icon: '/assets/images/ranks/SH.svg' },
+    { label: 'S', value: 'S', icon: '/assets/images/ranks/S.svg' },
+    { label: 'A', value: 'A', icon: '/assets/images/ranks/A.svg' },
+    { label: 'B', value: 'B', icon: '/assets/images/ranks/B.svg' },
+    { label: 'C', value: 'C', icon: '/assets/images/ranks/C.svg' },
+    { label: 'D', value: 'D', icon: '/assets/images/ranks/D.svg' }
 ];
 
 /**
@@ -77,7 +79,7 @@ const filterDefs = [
     {
         key: 'modes',
         label: 'Mode',
-        header: 'Mode',
+        header: 'Modes',
         type: 'set',
         default: new Set(),
         test: (score, set) => set.size === 0 || set.has(score.mode),
@@ -85,23 +87,78 @@ const filterDefs = [
         options: modes
     },
     {
-        key: 'mods',
-        label: 'Mod',
-        header: 'Mods',
+        key: 'ranks',
+        label: 'Rank',
+        header: 'Ranks',
         type: 'set',
         default: new Set(),
-        test: (score, set) => {
-            if (set.size == 0) return true;
-            for (const mod of score.mods) {
-                if (set.has(mod.acronym.toUpperCase())) return true;
-            }
-            return false;
-        },
-        getDisplayValue: value => mods[value]?.name || value,
-        options: Object.values(mods).map(mod => ({
-            label: mod.name,
-            value: mod.acronym.toUpperCase()
-        }))
+        getDisplayValue: value => ranks.find(e => e.value == value.toUpperCase())?.label || value,
+        test: (score, set) => set.size === 0 || set.has(score.rank.toUpperCase()),
+        options: ranks
+    },
+    {
+        key: 'acc_min',
+        label: 'Min acc',
+        header: 'Minimum accuracy',
+        type: 'number',
+        default: 0,
+        userDefault: 95,
+        test: (score, value) => score.accuracy > value,
+        getDisplayValue: value => `${value}%`
+    },
+    {
+        key: 'acc_max',
+        label: 'Max acc',
+        header: 'Maximum accuracy',
+        type: 'number',
+        default: 100,
+        test: (score, value) => score.accuracy < value,
+        getDisplayValue: value => `${value}%`
+    },
+    {
+        key: 'stars_min',
+        label: 'Min stars',
+        header: 'Minimum stars',
+        type: 'number',
+        default: 0,
+        userDefault: 5,
+        test: (score, value) => score.beatmap.stars > value
+    },
+    {
+        key: 'stars_max',
+        label: 'Max stars',
+        header: 'Maximum stars',
+        type: 'number',
+        default: 9999,
+        test: (score, value) => score.beatmap.stars < value
+    },
+    {
+        key: 'pp_min',
+        label: 'Min pp',
+        header: 'Minimum pp',
+        type: 'number',
+        default: 0,
+        userDefault: 200,
+        test: (score, value) => {
+            if (value <= 0 && score.pp === null) return true;
+            return score.pp > value;
+        }
+    },
+    {
+        key: 'pp_max',
+        label: 'Max pp',
+        header: 'Maximum pp',
+        type: 'number',
+        default: 9999,
+        test: (score, value) => score.pp < value
+    },
+    {
+        key: 'fcs_only',
+        label: 'FCs only',
+        header: 'Only show FCs',
+        type: 'bool',
+        default: false,
+        test: (score, value) => score.is_fc == value
     },
     {
         key: 'statuses',
@@ -120,7 +177,7 @@ const filterDefs = [
         type: 'set',
         default: new Set(),
         test: (score, set) => set.size === 0 || set.has(score.user.id.toString()) || set.has(score.user.name),
-        placeholder: 'Enter user ID, name, or profile URL'
+        placeholder: 'User profile URL, ID, or name'
     },
     {
         key: 'maps',
@@ -129,86 +186,41 @@ const filterDefs = [
         type: 'set',
         default: new Set(),
         test: (score, set) => set.size === 0 || set.has(score.beatmap.id.toString()),
-        placeholder: 'Enter beatmap ID or URL'
+        placeholder: 'Beatmap page URL or ID'
     },
     {
-        key: 'ranks',
-        label: 'Rank',
-        header: 'Ranks',
+        key: 'mods',
+        label: 'Mod',
+        header: 'Mods',
         type: 'set',
         default: new Set(),
-        getDisplayValue: value => ranks.find(e => e.value == value.toUpperCase())?.label || value,
-        test: (score, set) => set.size === 0 || set.has(score.rank.toUpperCase())
-    },
-    {
-        key: 'acc_min',
-        label: 'Min acc',
-        header: 'Minimum accuracy',
-        type: 'number',
-        default: 0,
-        userDefault: 95,
-        test: (score, value) => score.accuracy > value,
-        getDisplayValue: value => `${value}%`,
-        placeholder: '75'
-    },
-    {
-        key: 'acc_max',
-        label: 'Max acc',
-        header: 'Maximum accuracy',
-        type: 'number',
-        default: 100,
-        test: (score, value) => score.accuracy < value,
-        getDisplayValue: value => `${value}%`,
-        placeholder: '100'
-    },
-    {
-        key: 'stars_min',
-        label: 'Min stars',
-        header: 'Minimum stars',
-        type: 'number',
-        default: 0,
-        userDefault: 5,
-        test: (score, value) => score.beatmap.stars > value,
-        placeholder: '5'
-    },
-    {
-        key: 'stars_max',
-        label: 'Max stars',
-        header: 'Maximum stars',
-        type: 'number',
-        default: 9999,
-        test: (score, value) => score.beatmap.stars < value,
-        placeholder: '999'
-    },
-    {
-        key: 'pp_min',
-        label: 'Min pp',
-        header: 'Minimum pp',
-        type: 'number',
-        default: 0,
-        userDefault: 200,
-        test: (score, value) => {
-            if (value <= 0 && score.pp === null) return true;
-            return score.pp > value;
+        test: (score, set) => {
+            if (set.size == 0) return true;
+            for (const mod of score.mods) {
+                if (set.has(mod.acronym.toUpperCase())) return true;
+            }
+            return false;
         },
-        placeholder: '200'
-    },
-    {
-        key: 'pp_max',
-        label: 'Max pp',
-        header: 'Maximum pp',
-        type: 'number',
-        default: 9999,
-        test: (score, value) => score.pp < value,
-        placeholder: '2000'
-    },
-    {
-        key: 'fcs_only',
-        label: 'FCs only',
-        header: 'Only show FCs',
-        type: 'bool',
-        default: false,
-        test: (score, value) => score.is_fc == value
+        getDisplayValue: value => mods[value]?.name || value,
+        options: Object.values(mods)
+            .sort((a, b) => {
+                const types = [
+                    'DifficultyReduction',
+                    'DifficultyIncrease',
+                    'Fun',
+                    'Conversion',
+                    'Automation',
+                    'System'
+                ];
+                const typeDiff = types.indexOf(a.type) - types.indexOf(b.type);
+                if (typeDiff != 0) return typeDiff;
+                return a.name > b.name ? 1 : -1;
+            })
+            .map(mod => ({
+                label: mod.name,
+                value: mod.acronym.toUpperCase(),
+                icon: `/assets/images/mod-icons/${mod.acronym.toUpperCase()}.svg`
+            }))
     }
 ];
 

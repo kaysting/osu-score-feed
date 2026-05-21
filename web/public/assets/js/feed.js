@@ -113,27 +113,99 @@ const updateFilters = () => {
 updateFilters();
 
 btnEditFilters.addEventListener('click', () => {
-    const el = createElement('div.flex.col.gap-8#filterForm');
+    // Create the element to contain all filters
+    const elForm = createElement('div.flex.col.gap-8#filterForm');
+
+    // Loop through filter definitions
     for (const def of filterDefs) {
-        el.insertAdjacentHTML(
+        // Append the filter's section card with header
+        elForm.insertAdjacentHTML(
             'beforeend',
             /*html*/ `
-                <section class="card flex col gap-8" style="padding: 12px">
-                    <h3 class="no-margin text-16 text-semibold text-bright">${def.header || def.label}</h3>
+                <section id="filterEditor-${def.key}" class="card flex col gap-12" style="padding: 16px 12px">
+                    <h3 class="no-margin text-16 text-medium text-secondary flex-grow">${def.header || def.label}</h3>
                 </section>
             `
         );
-    }
-    showModal('Feed Filters', el, [
-        {
-            label: 'Cancel',
-            class: 'text'
-        },
-        {
-            label: 'Apply',
-            onClick: () => {}
+        const elSection = $(`#filterEditor-${def.key}`, elForm);
+        const sectionToRow = () => {
+            elSection.classList.remove('col');
+            elSection.classList.add('row', 'flex-wrap', 'align-center');
+        };
+
+        switch (def.type) {
+            case 'set': {
+                // Create checkbox container
+                const elCheckboxes = document.createElement('div');
+                elCheckboxes.classList.add('grid-dynamic');
+                elCheckboxes.style.setProperty('--size', '250px');
+                elCheckboxes.style.setProperty('--gap', '4px');
+
+                // If the set definition specifies a list of valid values,
+                // loop through them and a checkbox for each one
+                // Otherwise, add a textbox and let users add options using it
+                if (def.options) {
+                    // Loop through options and build and add the checkbox to the container
+                    for (const opt of def.options) {
+                        const selected = (userFilters[def.key] || new Set()).has(opt.value);
+                        const image = opt.icon ? `<img src="${opt.icon}" style="height: 20px">` : '';
+                        const text = opt.iconOnly ? '' : opt.label;
+                        elCheckboxes.insertAdjacentHTML(
+                            'beforeend',
+                            /*html*/ `
+                                <label class="control contained" title="${opt.label}" ${selected ? 'checked' : ''}>
+                                    <input type="checkbox" name="${def.key}" value="${opt.value}">
+                                    ${image} ${text}
+                                </label>
+                            `
+                        );
+                    }
+
+                    // Add the checkbox container to the section card
+                    elSection.append(elCheckboxes);
+                    initImageLoadStates(elCheckboxes);
+                } else {
+                }
+                break;
+            }
+            case 'string':
+            case 'number': {
+                if (!def.options) sectionToRow();
+                elSection.insertAdjacentHTML(
+                    'beforeend',
+                    /*html */ `
+                        <div class="textbox medium" style="width: ${def.type == 'number' ? 150 : 300}px">
+                            <input type="number" name="${def.key}" placeholder="${def.placeholder || def.default}">
+                        </div>
+                    `
+                );
+                break;
+            }
+            case 'boolean': {
+                if (!def.options) sectionToRow();
+                break;
+            }
         }
-    ]);
+    }
+    const dialog = showModal(
+        'Feed Filters',
+        elForm,
+        [
+            {
+                label: 'Cancel',
+                class: 'text'
+            },
+            {
+                label: 'Apply',
+                onClick: () => {}
+            }
+        ],
+        {
+            width: 900,
+            height: 1000,
+            expandWidth: true
+        }
+    );
 });
 
 // Function to recursively add scores to the UI from the pending array
