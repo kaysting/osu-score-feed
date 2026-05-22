@@ -137,3 +137,19 @@
 #scores a .score .stat .value.na {
     color: var(--c-text-muted);
 }
+
+#filterEditor {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+#filterEditor>.fullWidth {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 750px) {
+    #filterEditor {
+        grid-template-columns: 1fr;
+    }
+}

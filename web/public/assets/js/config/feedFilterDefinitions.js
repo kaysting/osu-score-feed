@@ -16,6 +16,13 @@ import mods from '../data/mods.js';
  */
 
 /**
+ * Filter validate input callback.
+ * @callback FilterValidateInputCallback
+ * @param {string} input The user-inputted string.
+ * @returns {string|null|void|false} The validated value or a falsy value to indicate an invalid value.
+ */
+
+/**
  * Filter value option.
  * @typedef {Object} FilterValueOption
  * @property {string} label The display text for this value.
@@ -38,6 +45,10 @@ import mods from '../data/mods.js';
  *
  * These options will be explicitly selectable in the filter editor instead of a textbox when provided.
  * @property {string} [placeholder] A placeholder for the input textbox if one exists.
+ * @property {string} [validateInput] A callback function that accepts a user-inputted filter value and validates it, returning the validated (and sanitized) value, or a falsy value indicating the input is invalid.
+ * @property {boolean} [gridOptions] Whether or not the checkbox/radio options in the filter editor should be placed in a fixed grid instead of flowing naturally, if `options` is specified.
+ *
+ * Defaults to `false`.
  */
 
 /** @type {FilterValueOption[]} */
@@ -61,14 +72,14 @@ const statuses = [
 
 /** @type {FilterValueOption[]} */
 const ranks = [
-    { label: 'SS', value: 'X', icon: '/assets/images/ranks/X.svg' },
-    { label: 'Silver SS', value: 'XH', icon: '/assets/images/ranks/XH.svg' },
-    { label: 'Silver S', value: 'SH', icon: '/assets/images/ranks/SH.svg' },
-    { label: 'S', value: 'S', icon: '/assets/images/ranks/S.svg' },
-    { label: 'A', value: 'A', icon: '/assets/images/ranks/A.svg' },
-    { label: 'B', value: 'B', icon: '/assets/images/ranks/B.svg' },
-    { label: 'C', value: 'C', icon: '/assets/images/ranks/C.svg' },
-    { label: 'D', value: 'D', icon: '/assets/images/ranks/D.svg' }
+    { label: 'SS', value: 'X', icon: '/assets/images/ranks/X.svg', iconOnly: true },
+    { label: 'Silver SS', value: 'XH', icon: '/assets/images/ranks/XH.svg', iconOnly: true },
+    { label: 'Silver S', value: 'SH', icon: '/assets/images/ranks/SH.svg', iconOnly: true },
+    { label: 'S', value: 'S', icon: '/assets/images/ranks/S.svg', iconOnly: true },
+    { label: 'A', value: 'A', icon: '/assets/images/ranks/A.svg', iconOnly: true },
+    { label: 'B', value: 'B', icon: '/assets/images/ranks/B.svg', iconOnly: true },
+    { label: 'C', value: 'C', icon: '/assets/images/ranks/C.svg', iconOnly: true },
+    { label: 'D', value: 'D', icon: '/assets/images/ranks/D.svg', iconOnly: true }
 ];
 
 /**
@@ -99,7 +110,7 @@ const filterDefs = [
     {
         key: 'acc_min',
         label: 'Min acc',
-        header: 'Minimum accuracy',
+        header: 'Min accuracy',
         type: 'number',
         default: 0,
         userDefault: 95,
@@ -109,7 +120,7 @@ const filterDefs = [
     {
         key: 'acc_max',
         label: 'Max acc',
-        header: 'Maximum accuracy',
+        header: 'Max accuracy',
         type: 'number',
         default: 100,
         test: (score, value) => score.accuracy < value,
@@ -118,7 +129,7 @@ const filterDefs = [
     {
         key: 'stars_min',
         label: 'Min stars',
-        header: 'Minimum stars',
+        header: 'Min stars',
         type: 'number',
         default: 0,
         userDefault: 5,
@@ -127,7 +138,7 @@ const filterDefs = [
     {
         key: 'stars_max',
         label: 'Max stars',
-        header: 'Maximum stars',
+        header: 'Max stars',
         type: 'number',
         default: 9999,
         test: (score, value) => score.beatmap.stars < value
@@ -135,7 +146,7 @@ const filterDefs = [
     {
         key: 'pp_min',
         label: 'Min pp',
-        header: 'Minimum pp',
+        header: 'Min pp',
         type: 'number',
         default: 0,
         userDefault: 200,
@@ -147,7 +158,7 @@ const filterDefs = [
     {
         key: 'pp_max',
         label: 'Max pp',
-        header: 'Maximum pp',
+        header: 'Max pp',
         type: 'number',
         default: 9999,
         test: (score, value) => score.pp < value
@@ -177,7 +188,21 @@ const filterDefs = [
         type: 'set',
         default: new Set(),
         test: (score, set) => set.size === 0 || set.has(score.user.id.toString()) || set.has(score.user.name),
-        placeholder: 'User profile URL, ID, or name'
+        placeholder: 'Enter user profile URL, ID, or name',
+        validateInput: input => {
+            // Attempt to pull ID out of a profile URL
+            // If we get a match, set it to input so we parse it as a number below
+            const matches = input.match(/\/users?\/(\d+)($|#)/);
+            const urlId = matches?.[1];
+
+            // Attempt to parse input as a number (user ID)
+            const num = parseInt(Number(urlId || input));
+            if (!isNaN(num) && num > 0) return num;
+
+            // Fall back to player name if it's within length range
+            console.log(input);
+            if (input.length > 2 && input.length < 32) return input;
+        }
     },
     {
         key: 'maps',
@@ -186,12 +211,22 @@ const filterDefs = [
         type: 'set',
         default: new Set(),
         test: (score, set) => set.size === 0 || set.has(score.beatmap.id.toString()),
-        placeholder: 'Beatmap page URL or ID'
+        placeholder: 'Enter beatmap page URL or ID',
+        validateInput: input => {
+            // Attempt to pull ID out of a profile URL
+            // If we get a match, set it to input so we parse it as a number below
+            const matches = input.match(/\/beatmapsets\/\d+#\w+\/(\d+)$/);
+            const urlId = matches?.[1];
+
+            // Attempt to parse input as a number (user ID)
+            const num = parseInt(Number(urlId || input));
+            if (!isNaN(num) && num > 0) return num;
+        }
     },
     {
         key: 'mods',
         label: 'Mod',
-        header: 'Mods',
+        header: 'Mod combination',
         type: 'set',
         default: new Set(),
         test: (score, set) => {
@@ -202,6 +237,7 @@ const filterDefs = [
             return false;
         },
         getDisplayValue: value => mods[value]?.name || value,
+        gridOptions: true,
         options: Object.values(mods)
             .sort((a, b) => {
                 const types = [
