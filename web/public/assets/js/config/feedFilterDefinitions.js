@@ -48,6 +48,9 @@ import { areSetsEqual } from '../utils.js';
  * @property {FilterValueOption[]} [options] An array of objects with `label` and `value` properties representing the valid values for this filter.
  *
  * These options will be explicitly selectable in the filter editor instead of a textbox when provided.
+ * @property {string} [allOptionLabel] The label to use for the "All" placeholder option.
+ *
+ * Defaults to `all`.
  * @property {string} [placeholder] A placeholder for the input textbox if one exists.
  * @property {string} [validateInput] A callback function that accepts a user-inputted filter value and validates it, returning the validated (and sanitized) value, or a falsy value indicating the input is invalid.
  * @property {boolean} [gridOptions] Whether or not the checkbox/radio options in the filter editor should be placed in a fixed grid instead of flowing naturally, if `options` is specified.
@@ -85,6 +88,20 @@ const ranks = [
     { label: 'C', value: 'C', icon: '/assets/images/ranks/C.svg', iconOnly: true },
     { label: 'D', value: 'D', icon: '/assets/images/ranks/D.svg', iconOnly: true }
 ];
+
+const modOptions = Object.values(mods)
+    .sort((a, b) => {
+        const types = ['DifficultyReduction', 'DifficultyIncrease', 'Fun', 'Conversion', 'Automation', 'System'];
+        // Sort by type and then acronym alphabetically
+        const typeDiff = types.indexOf(a.type) - types.indexOf(b.type);
+        if (typeDiff != 0) return typeDiff;
+        return a.acronym > b.acronym ? 1 : -1;
+    })
+    .map(mod => ({
+        label: mod.name,
+        value: mod.acronym.toUpperCase(),
+        icon: `/assets/images/mod-icons/${mod.acronym.toUpperCase()}.svg`
+    }));
 
 /**
  * Score feed filter definitions.
@@ -243,9 +260,9 @@ const filterDefs = [
         }
     },
     {
-        key: 'mods',
+        key: 'mod_combo',
         label: 'Mods',
-        header: 'Mod combination',
+        header: 'Exact mod combination',
         type: 'set',
         default: new Set(),
         displayTogether: true,
@@ -254,36 +271,46 @@ const filterDefs = [
             const scoreMods = new Set(score.mods.map(m => m.acronym.toUpperCase()));
             return areSetsEqual(set, scoreMods);
         },
-        getDisplayValue: value => {
-            if (typeof value === 'string') {
-                return mods[value]?.name || value;
-            } else {
-                return Array.from(value)
-                    .map(v => mods[v]?.acronym || v)
-                    .join('');
-            }
-        },
+        getDisplayValue: set =>
+            Array.from(set)
+                .map(v => mods[v]?.acronym || v)
+                .join(''),
         gridOptions: true,
-        options: Object.values(mods)
-            .sort((a, b) => {
-                const types = [
-                    'DifficultyReduction',
-                    'DifficultyIncrease',
-                    'Fun',
-                    'Conversion',
-                    'Automation',
-                    'System'
-                ];
-                // Sort by type and then acronym alphabetically
-                const typeDiff = types.indexOf(a.type) - types.indexOf(b.type);
-                if (typeDiff != 0) return typeDiff;
-                return a.acronym > b.acronym ? 1 : -1;
-            })
-            .map(mod => ({
-                label: mod.name,
-                value: mod.acronym.toUpperCase(),
-                icon: `/assets/images/mod-icons/${mod.acronym.toUpperCase()}.svg`
-            }))
+        options: modOptions
+    },
+    {
+        key: 'excludes_mods',
+        label: 'Excludes mod',
+        header: 'Exclude mods',
+        type: 'set',
+        default: new Set(),
+        test: (score, set) => {
+            for (const mod of score.mods) {
+                if (set.has(mod.acronym.toUpperCase())) return false;
+            }
+            return true;
+        },
+        getDisplayValue: v => mods[v]?.acronym || v,
+        gridOptions: true,
+        options: modOptions,
+        allOptionLabel: 'None'
+    },
+    {
+        key: 'includes_mods',
+        label: 'Includes mod',
+        header: 'Include mods',
+        type: 'set',
+        default: new Set(),
+        test: (score, set) => {
+            const scoreMods = new Set(score.mods.map(m => m.acronym.toUpperCase()));
+            for (const mod of set) {
+                if (!scoreMods.has(mod)) return false;
+            }
+            return true;
+        },
+        getDisplayValue: v => mods[v]?.acronym || v,
+        gridOptions: true,
+        options: modOptions
     }
 ];
 

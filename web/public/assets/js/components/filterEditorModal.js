@@ -78,7 +78,7 @@ export default userFiltersOld =>
 
                 // Add all option to sets
                 if (def.type == 'set') {
-                    opts.unshift({ label: 'All', value: '', isAllOption: true });
+                    opts.unshift({ label: def.allOptionLabel || 'All', value: '', isAllOption: true });
                 }
 
                 // Create checkbox container
