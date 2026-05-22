@@ -1,4 +1,5 @@
 import mods from '../data/mods.js';
+import { areSetsEqual } from '../utils.js';
 
 /**
  * Filter test callback.
@@ -39,8 +40,11 @@ import mods from '../data/mods.js';
  * @property {type} type The type of value that this filter accepts. Can be `number`, `boolean`, or `set`. Set types use a JavaScript `Set` to store a list of unique values.
  * @property {FilterTestCallback} test A callback function that tests a score against the current filter value, returning a boolean where `true` means the score passes the filter.
  * @property {any} default The default value to use for this filter when one isn't provided by the user. This must be the same datatype as the set `type`.
+ * @property {string} [displayTogether] Whether or not the items of a set filter should be displayed in a single button above the feed instead of separately. Only applies to `set` type filters.
+ *
+ * Defaults to `false`.
  * @property {string} [header] The header for this filter's section in the filter editor popup. Defaults to the value of `label`.
- * @property {FilterDisplayValueCallback} [getDisplayValue] A callback function that formats the current filter value for display. If not provided, the value is displayed as-is.
+ * @property {FilterDisplayValueCallback} [getDisplayValue] A callback function that formats the current filter value for display in the pills above the feed. If not provided, the value is displayed as-is.
  * @property {FilterValueOption[]} [options] An array of objects with `label` and `value` properties representing the valid values for this filter.
  *
  * These options will be explicitly selectable in the filter editor instead of a textbox when provided.
@@ -164,6 +168,22 @@ const filterDefs = [
         test: (score, value) => score.pp < value
     },
     {
+        key: 'length_min',
+        label: 'Min length',
+        header: 'Min length (secs)',
+        type: 'number',
+        default: 0,
+        test: (score, value) => score.beatmap.length > value
+    },
+    {
+        key: 'length_max',
+        label: 'Max length',
+        header: 'Max length (secs)',
+        type: 'number',
+        default: 9999,
+        test: (score, value) => score.beatmap.length < value
+    },
+    {
         key: 'fcs_only',
         label: 'FCs only',
         header: 'Only show FCs',
@@ -200,7 +220,6 @@ const filterDefs = [
             if (!isNaN(num) && num > 0) return num;
 
             // Fall back to player name if it's within length range
-            console.log(input);
             if (input.length > 2 && input.length < 32) return input;
         }
     },
@@ -210,7 +229,7 @@ const filterDefs = [
         header: 'Beatmaps',
         type: 'set',
         default: new Set(),
-        test: (score, set) => set.size === 0 || set.has(score.beatmap.id.toString()),
+        test: (score, set) => set.size === 0 || set.has(score.beatmap.id) || set.has(score.beatmap.id.toString()),
         placeholder: 'Enter beatmap page URL or ID',
         validateInput: input => {
             // Attempt to pull ID out of a profile URL
@@ -225,18 +244,25 @@ const filterDefs = [
     },
     {
         key: 'mods',
-        label: 'Mod',
+        label: 'Mods',
         header: 'Mod combination',
         type: 'set',
         default: new Set(),
+        displayTogether: true,
         test: (score, set) => {
             if (set.size == 0) return true;
-            for (const mod of score.mods) {
-                if (set.has(mod.acronym.toUpperCase())) return true;
-            }
-            return false;
+            const scoreMods = new Set(score.mods.map(m => m.acronym.toUpperCase()));
+            return areSetsEqual(set, scoreMods);
         },
-        getDisplayValue: value => mods[value]?.name || value,
+        getDisplayValue: value => {
+            if (typeof value === 'string') {
+                return mods[value]?.name || value;
+            } else {
+                return Array.from(value)
+                    .map(v => mods[v]?.acronym || v)
+                    .join('');
+            }
+        },
         gridOptions: true,
         options: Object.values(mods)
             .sort((a, b) => {
@@ -248,6 +274,7 @@ const filterDefs = [
                     'Automation',
                     'System'
                 ];
+                // Sort by type and then acronym alphabetically
                 const typeDiff = types.indexOf(a.type) - types.indexOf(b.type);
                 if (typeDiff != 0) return typeDiff;
                 return a.acronym > b.acronym ? 1 : -1;

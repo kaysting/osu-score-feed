@@ -54,3 +54,47 @@ export function starsToColor(stars) {
         fg: rgbToHex(...interpolate(fgPoints, stars))
     };
 }
+
+export function extractFormData(formElement) {
+    const data = {};
+    const namedInputs = formElement.querySelectorAll('[name]');
+    for (const input of namedInputs) {
+        const name = input.name;
+        if (!data[name]) data[name] = null;
+        switch (input.type || input.tagName.toLowerCase()) {
+            case 'checkbox': {
+                if (!data[name]) data[name] = [];
+                if (!input.checked) break;
+                data[name].push(input.value);
+                break;
+            }
+            case 'radio': {
+                if (!input.checked) break;
+                data[name] = input.value;
+                break;
+            }
+            case 'number': {
+                const value = input.value;
+                if (!value) break;
+                const num = Number(input.value);
+                if (isNaN(num)) break;
+                data[name] = num;
+                break;
+            }
+            default: {
+                data[name] = input.value;
+            }
+        }
+    }
+    return data;
+}
+
+export function areSetsEqual(a, b) {
+    if (a.size !== b.size) return false;
+
+    for (let item of a) {
+        if (!b.has(item)) return false;
+    }
+
+    return true;
+}
