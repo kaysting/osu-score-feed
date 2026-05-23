@@ -69,12 +69,8 @@ export default userFiltersOld =>
             // Always initialize checkboxes for set and bool types, or if
             // the definition explicitly provides a list of valid options
             const elCheckboxes = document.createElement('div');
-            if (['set', 'bool'].includes(def.type) || def.options) {
-                const boolOpts = [
-                    { label: 'No', value: false },
-                    { label: 'Yes', value: true }
-                ];
-                const opts = def.options ? [...def.options] : def.type == 'bool' ? boolOpts : [];
+            if (def.type == 'set' || def.options) {
+                const opts = def.options ? [...def.options] : [];
 
                 // Add all option to sets
                 if (def.type == 'set') {
@@ -123,13 +119,129 @@ export default userFiltersOld =>
                 // Add the checkbox container to the section card
                 elSection.append(elCheckboxes);
                 initImageLoadStates(elCheckboxes);
+
+                // Function to handle hiding some/showing all options
+                let areAllOptionsVisible = false;
+                const toggleShowAllOptions = (showAllOptions = null) => {
+                    // Invert existing state or force specified state
+                    areAllOptionsVisible = showAllOptions ?? !areAllOptionsVisible;
+                    console.log(`Toggling visibility of all options in filter ${def.key} to ${areAllOptionsVisible}`);
+
+                    // Update option visibility
+                    const els = $$('label', elCheckboxes);
+                    if (!areAllOptionsVisible) {
+                        // Hide options that aren't checked and that aren't the all option
+                        for (const el of els) {
+                            const input = $('input', el);
+                            const shouldHide = !input.checked && input.dataset.isAll !== 'true';
+                            el.style.display = shouldHide ? 'none' : '';
+                        }
+                    } else {
+                        for (const el of els) {
+                            el.style.display = '';
+                        }
+                    }
+
+                    // Update button
+                    const btn = $('.expandCollapseButton', elSection);
+                    if (btn) {
+                        $('.symbol', btn).innerText = !areAllOptionsVisible
+                            ? 'keyboard_arrow_down'
+                            : 'keyboard_arrow_up';
+                        $('.label', btn).innerText = !areAllOptionsVisible
+                            ? `Show all ${els.length} options`
+                            : 'Show fewer options';
+                    }
+                };
+
+                // Filter visible options
+                const filterOptions = input => {
+                    input = input.trim().toLowerCase();
+                    if (!input) {
+                        // Restore all visible state when the user clears the filter box
+                        toggleShowAllOptions(areAllOptionsVisible);
+                        return;
+                    }
+
+                    // Filter options
+                    // Check text components of each option against the input and
+                    // make the element visible if any components match
+                    const els = $$('label', elCheckboxes);
+                    for (const el of els) {
+                        let matches = false;
+                        const sources = [el.title, $('input', el).value];
+                        for (const str of sources) {
+                            if (str.toLowerCase().includes(input)) {
+                                matches = true;
+                            }
+                        }
+                        el.style.display = matches ? '' : 'none';
+                    }
+                };
+
+                // Add extra UI when there are a lot of items
+                // This UI allows showing all/hiding some items as well as filtering them
+                if (opts.length > 15) {
+                    // Add filter textbox
+                    elCheckboxes.insertAdjacentHTML(
+                        'beforebegin',
+                        /*html*/ `
+                            <div class="textbox medium" style="width: 300px; padding-right: 6px">
+                                <input type="text" class="filterTextbox" placeholder="Type to filter options...">
+                                <button type="button" class="btn tertiary small circle clearButton" title="Clear">
+                                    <span class="symbol">close</span>
+                                </button>
+                            </div>
+                        `
+                    );
+
+                    // Add show/hide all button
+                    elCheckboxes.insertAdjacentHTML(
+                        'afterend',
+                        /*html*/ `
+                            <div class="flex justify-center">
+                                <button type="button" class="btn text expandCollapseButton" style="width: 500px">
+                                    <span class="symbol"></span>
+                                    <span class="label"></span>
+                                </button>
+                            </div>
+                        `
+                    );
+
+                    // Handle filtering visible options
+                    const textbox = $('.filterTextbox', elSection);
+                    const btnClear = $('.clearButton', elSection);
+                    textbox.addEventListener('input', e => {
+                        filterOptions(textbox.value || '');
+                    });
+                    btnClear.addEventListener('click', e => {
+                        filterOptions('');
+                        textbox.value = '';
+                        textbox.focus();
+                    });
+
+                    // Toggle showing all options with button
+                    const btn = $('.expandCollapseButton', elSection);
+                    btn.addEventListener('click', () => toggleShowAllOptions());
+
+                    // Toggle show all options to off to start with
+                    toggleShowAllOptions(false);
+                }
+            } else if (def.type == 'bool') {
+                // Append toggle switch
+                elSection.insertAdjacentHTML(
+                    'beforeend',
+                    /*html */ `
+                        <input type="checkbox" class="toggle" name="${def.key}" ${value ? 'checked' : ''}>
+                    `
+                );
             } else if (['string', 'number'].includes(def.type)) {
                 // String and number types both use a textbox
                 // Define differences ahead of time and use them in the HTML
                 const inputType = def.type == 'number' ? 'number' : 'text';
                 const width = def.type == 'number' ? 120 : 300;
                 const textAlign = def.type == 'number' ? 'center' : 'left';
-                const placeholder = def.placeholder || def.default;
+                const placeholder = escapeHTML(def.placeholder || def.default);
                 const value = escapeHTML(userFiltersOld[def.key] || '');
 
                 // Append textbox
@@ -163,16 +275,16 @@ export default userFiltersOld =>
                     /*html*/ `
                     <div class="flex gap-8 align-center">
                         <div class="textbox medium" style="width: 400px">
-                            <input type="text" id="filterEditor-${def.key}-search" placeholder="${def.placeholder}">
+                            <input type="text" class="search" placeholder="${def.placeholder}">
                         </div>
-                        <button type="button" id="filterEditor-${def.key}-add" class="btn circle" title="Add option (Enter)" disabled>
+                        <button type="button" class="btn circle searchAdd" title="Add option (Enter)" disabled>
                             <span class="symbol">add</span>
                         </button>
                     </div>
                 `
                 );
-                const textbox = $(`.textbox input`, elSection);
-                const btnAdd = $(`button.btn`, elSection);
+                const textbox = $(`.search`, elSection);
+                const btnAdd = $(`.searchAdd`, elSection);
 
                 const appendCheckbox = valueEscaped => {
                     elCheckboxes.insertAdjacentHTML(
@@ -241,7 +353,7 @@ export default userFiltersOld =>
                         isValueDefault = areSetsEqual(value, def.default);
                         break;
                     case 'bool':
-                        value = data[def.key] === 'true' ? true : false;
+                        value = data[def.key].includes('on');
                         isValueDefault = value === def.default;
                         break;
                     case 'number':

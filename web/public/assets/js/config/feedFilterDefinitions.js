@@ -122,17 +122,6 @@ const filterDefs = [
         optionGridSize: 200
     },
     {
-        key: 'ranks',
-        label: 'Rank',
-        header: 'Ranks',
-        type: 'set',
-        default: new Set(),
-        getDisplayValue: value => ranks.find(e => e.value == value.toUpperCase())?.label || value,
-        test: (score, set) => set.size === 0 || set.has(score.rank.toUpperCase()),
-        options: ranks,
-        optionGridSize: 100
-    },
-    {
         key: 'acc_min',
         label: 'Min acc',
         header: 'Min accuracy',
@@ -211,6 +200,17 @@ const filterDefs = [
         type: 'bool',
         default: false,
         test: (score, value) => score.is_fc == value
+    },
+    {
+        key: 'ranks',
+        label: 'Rank',
+        header: 'Ranks',
+        type: 'set',
+        default: new Set(),
+        getDisplayValue: value => ranks.find(e => e.value == value.toUpperCase())?.label || value,
+        test: (score, set) => set.size === 0 || set.has(score.rank.toUpperCase()),
+        options: ranks,
+        optionGridSize: 100
     },
     {
         key: 'statuses',
