@@ -53,9 +53,9 @@ import { areSetsEqual } from '../utils.js';
  * Defaults to `all`.
  * @property {string} [placeholder] A placeholder for the input textbox if one exists.
  * @property {string} [validateInput] A callback function that accepts a user-inputted filter value and validates it, returning the validated (and sanitized) value, or a falsy value indicating the input is invalid.
- * @property {boolean} [gridOptions] Whether or not the checkbox/radio options in the filter editor should be placed in a fixed grid instead of flowing naturally, if `options` is specified.
+ * @property {boolean} [optionGridSize] The minimum width of options in the input grid.
  *
- * Defaults to `false`.
+ * Defaults to `250`.
  */
 
 /** @type {FilterValueOption[]} */
@@ -116,7 +116,8 @@ const filterDefs = [
         default: new Set(),
         test: (score, set) => set.size === 0 || set.has(score.mode),
         getDisplayValue: value => modes.find(e => e.value == value)?.label || value,
-        options: modes
+        options: modes,
+        optionGridSize: 200
     },
     {
         key: 'ranks',
@@ -126,7 +127,8 @@ const filterDefs = [
         default: new Set(),
         getDisplayValue: value => ranks.find(e => e.value == value.toUpperCase())?.label || value,
         test: (score, set) => set.size === 0 || set.has(score.rank.toUpperCase()),
-        options: ranks
+        options: ranks,
+        optionGridSize: 100
     },
     {
         key: 'acc_min',
@@ -216,7 +218,8 @@ const filterDefs = [
         default: new Set(),
         test: (score, set) => set.size === 0 || set.has(score.beatmap.status),
         getDisplayValue: value => statuses.find(e => e.value == value)?.label || value,
-        options: statuses
+        options: statuses,
+        optionGridSize: 150
     },
     {
         key: 'users',
@@ -238,7 +241,8 @@ const filterDefs = [
 
             // Fall back to player name if it's within length range
             if (input.length > 2 && input.length < 32) return input;
-        }
+        },
+        optionGridSize: 150
     },
     {
         key: 'maps',
@@ -257,7 +261,8 @@ const filterDefs = [
             // Attempt to parse input as a number (user ID)
             const num = parseInt(Number(urlId || input));
             if (!isNaN(num) && num > 0) return num;
-        }
+        },
+        optionGridSize: 150
     },
     {
         key: 'mod_combo',
@@ -275,7 +280,6 @@ const filterDefs = [
             Array.from(set)
                 .map(v => mods[v]?.acronym || v)
                 .join(''),
-        gridOptions: true,
         options: modOptions
     },
     {
@@ -291,7 +295,6 @@ const filterDefs = [
             return true;
         },
         getDisplayValue: v => mods[v]?.acronym || v,
-        gridOptions: true,
         options: modOptions,
         allOptionLabel: 'None'
     },
@@ -309,7 +312,6 @@ const filterDefs = [
             return true;
         },
         getDisplayValue: v => mods[v]?.acronym || v,
-        gridOptions: true,
         options: modOptions
     }
 ];

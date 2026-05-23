@@ -32,9 +32,9 @@ export default score => {
                     <div class="flex col gap-4 flex-grow">
                         <div class="flex row gap-8 align-center">
                             <span class="pill status ${score.beatmap.status}">${score.beatmap.status.toUpperCase()}</span>
-                            <span class="artist text-12 text-medium">${score.beatmapset.artist}</span>
+                            <span class="artist text-12 text-medium">${escapeHTML(score.beatmapset.artist)}</span>
                         </div>
-                        <span class="title text-14 text-medium text-bright">${score.beatmapset.title}</span>
+                        <span class="title text-14 text-medium text-bright">${escapeHTML(score.beatmapset.title)}</span>
                         <div class="flex row gap-8 align-center">
                             <img src="/assets/images/ruleset-icons/${score.mode}.svg" alt="Mode: ${score.mode}" class="mode">
                             <span class="pill stars flex row gap-4 align-center" style="--bg: ${color.bg}; --fg: ${color.fg}">
@@ -42,7 +42,7 @@ export default score => {
                                 <span>${score.beatmap.stars.toFixed(2)}</span>
                             </span>
                             <span class="version text-12 text-semibold" style="color: ${score.beatmap.stars > 6.7 ? color.fg : color.bg}">
-                                ${score.beatmap.version}
+                                ${escapeHTML(score.beatmap.version)}
                             </span>
                         </div>
                     </div>
@@ -52,13 +52,13 @@ export default score => {
                     <div class="flex gap-12 align-center flex-grow">
                         <img src="${score.user.avatar_url}" alt="${score.user.name}'s profile picture" class="avatar">
                         <div class="flex col gap-4 justify-center">
-                            <span class="username text-medium text-15">${score.user.name}</span>
+                            <span class="username text-medium text-15">${escapeHTML(score.user.name)}</span>
                             <div class="flex gap-4 flags">
                                 <img
                                     src="/assets/images/flags/${score.user.country.code.toUpperCase()}.png"
-                                    alt="${score.user.country.name} flag"
+                                    alt="${escapeHTML(score.user.country.name)} flag"
                                     class="flag country"
-                                    title="${score.user.country.name}">
+                                    title="${escapeHTML(score.user.country.name)}">
                                 <img
                                     src="${score.user.team?.flag_url ?? ''}"
                                     alt="${score.user.team?.name} team flag"

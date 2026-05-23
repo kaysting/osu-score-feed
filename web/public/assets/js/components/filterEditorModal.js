@@ -82,13 +82,10 @@ export default userFiltersOld =>
                 }
 
                 // Create checkbox container
-                if (def.gridOptions) {
-                    elCheckboxes.classList.add('grid-dynamic');
-                    elCheckboxes.style.setProperty('--size', '250px');
-                    elCheckboxes.style.setProperty('--gap', '4px');
-                } else {
-                    elCheckboxes.classList.add('flex', 'gap-4', 'flex-wrap');
-                }
+                elCheckboxes.classList.add('grid-dynamic');
+                const defaultGridSize = def.type == 'bool' ? 100 : 250;
+                elCheckboxes.style.setProperty('--size', `${def.optionGridSize || defaultGridSize}px`);
+                elCheckboxes.style.setProperty('--gap', '4px');
 
                 // Loop through options
                 const inputType = def.type == 'set' ? 'checkbox' : 'radio';
