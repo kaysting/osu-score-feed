@@ -179,8 +179,8 @@ client.on('scores', scores => {
     scoreSpeedCheckCount += scores.length;
     const secsSinceLastSpeedCheck = (Date.now() - lastScoreSpeedCheck) / 1000;
     if (secsSinceLastSpeedCheck > 30) {
-        const scoresPerSec = Math.floor(scoreSpeedCheckCount / secsSinceLastSpeedCheck);
-        elStatusText.innerText = `Live - ${scoresPerSec} scores/sec`;
+        const scoresPerMin = Math.floor(scoreSpeedCheckCount / (secsSinceLastSpeedCheck / 60));
+        elStatusText.innerText = `Live - Receiving ~${scoresPerMin} scores/min`;
         scoreSpeedCheckCount = 0;
         lastScoreSpeedCheck = Date.now();
     }

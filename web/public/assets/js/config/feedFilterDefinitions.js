@@ -60,7 +60,7 @@ import { areSetsEqual } from '../utils.js';
 
 /** @type {FilterValueOption[]} */
 const modes = [
-    { label: 'osu!standard', value: 'osu', icon: '/assets/images/ruleset-icons/osu.svg' },
+    { label: 'osu!', value: 'osu', icon: '/assets/images/ruleset-icons/osu.svg' },
     { label: 'osu!taiko', value: 'taiko', icon: '/assets/images/ruleset-icons/taiko.svg' },
     { label: 'osu!catch', value: 'fruits', icon: '/assets/images/ruleset-icons/fruits.svg' },
     { label: 'osu!mania', value: 'mania', icon: '/assets/images/ruleset-icons/mania.svg' }
@@ -77,16 +77,17 @@ const statuses = [
     { label: 'Graveyard', value: 'graveyard' }
 ];
 
+const ranksIconOnly = true;
 /** @type {FilterValueOption[]} */
 const ranks = [
-    { label: 'SS', value: 'X', icon: '/assets/images/ranks/X.svg', iconOnly: true },
-    { label: 'Silver SS', value: 'XH', icon: '/assets/images/ranks/XH.svg', iconOnly: true },
-    { label: 'Silver S', value: 'SH', icon: '/assets/images/ranks/SH.svg', iconOnly: true },
-    { label: 'S', value: 'S', icon: '/assets/images/ranks/S.svg', iconOnly: true },
-    { label: 'A', value: 'A', icon: '/assets/images/ranks/A.svg', iconOnly: true },
-    { label: 'B', value: 'B', icon: '/assets/images/ranks/B.svg', iconOnly: true },
-    { label: 'C', value: 'C', icon: '/assets/images/ranks/C.svg', iconOnly: true },
-    { label: 'D', value: 'D', icon: '/assets/images/ranks/D.svg', iconOnly: true }
+    { label: 'Silver SS', value: 'XH', icon: '/assets/images/ranks/XH.svg', iconOnly: ranksIconOnly },
+    { label: 'SS', value: 'X', icon: '/assets/images/ranks/X.svg', iconOnly: ranksIconOnly },
+    { label: 'Silver S', value: 'SH', icon: '/assets/images/ranks/SH.svg', iconOnly: ranksIconOnly },
+    { label: 'S', value: 'S', icon: '/assets/images/ranks/S.svg', iconOnly: ranksIconOnly },
+    { label: 'A', value: 'A', icon: '/assets/images/ranks/A.svg', iconOnly: ranksIconOnly },
+    { label: 'B', value: 'B', icon: '/assets/images/ranks/B.svg', iconOnly: ranksIconOnly },
+    { label: 'C', value: 'C', icon: '/assets/images/ranks/C.svg', iconOnly: ranksIconOnly },
+    { label: 'D', value: 'D', icon: '/assets/images/ranks/D.svg', iconOnly: ranksIconOnly }
 ];
 
 const modOptions = Object.values(mods)

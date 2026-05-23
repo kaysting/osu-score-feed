@@ -83,9 +83,11 @@ export default userFiltersOld =>
 
                 // Create checkbox container
                 elCheckboxes.classList.add('grid-dynamic');
-                const defaultGridSize = def.type == 'bool' ? 100 : 250;
+                const defaultGridSize = def.type == 'bool' ? 80 : 250;
                 elCheckboxes.style.setProperty('--size', `${def.optionGridSize || defaultGridSize}px`);
                 elCheckboxes.style.setProperty('--gap', '4px');
+                elCheckboxes.style.width = 'auto';
+                elCheckboxes.style.maxWidth = 'auto';
 
                 // Loop through options
                 const inputType = def.type == 'set' ? 'checkbox' : 'radio';
@@ -125,7 +127,7 @@ export default userFiltersOld =>
                 // String and number types both use a textbox
                 // Define differences ahead of time and use them in the HTML
                 const inputType = def.type == 'number' ? 'number' : 'text';
-                const width = def.type == 'number' ? 100 : 300;
+                const width = def.type == 'number' ? 120 : 300;
                 const textAlign = def.type == 'number' ? 'center' : 'left';
                 const placeholder = def.placeholder || def.default;
                 const value = escapeHTML(userFiltersOld[def.key] || '');
@@ -134,11 +136,21 @@ export default userFiltersOld =>
                 elSection.insertAdjacentHTML(
                     'beforeend',
                     /*html */ `
-                    <div class="textbox medium" style="width: ${width}px">
-                        <input type="${inputType}" name="${def.key}" placeholder="${placeholder}" value="${value}" style="text-align: ${textAlign}">
-                    </div>
-                `
+                        <div class="textbox medium" style="width: ${width}px; padding-right: 6px">
+                            <input type="${inputType}" name="${def.key}" placeholder="${placeholder}" value="${value}" style="text-align: ${textAlign}">
+                            <button type="button" class="btn tertiary small circle" title="Clear">
+                                <span class="symbol">close</span>
+                            </button>
+                        </div>
+                    `
                 );
+
+                // Handle clear button
+                const textbox = $('input', elSection);
+                const btnClear = $('.btn', elSection);
+                btnClear.addEventListener('click', () => {
+                    textbox.value = '';
+                });
             }
 
             // For set types that don't include valid options,
@@ -153,7 +165,7 @@ export default userFiltersOld =>
                         <div class="textbox medium" style="width: 400px">
                             <input type="text" id="filterEditor-${def.key}-search" placeholder="${def.placeholder}">
                         </div>
-                        <button id="filterEditor-${def.key}-add" class="btn circle" title="Add option (Enter)" disabled>
+                        <button type="button" id="filterEditor-${def.key}-add" class="btn circle" title="Add option (Enter)" disabled>
                             <span class="symbol">add</span>
                         </button>
                     </div>
@@ -186,9 +198,10 @@ export default userFiltersOld =>
                     const valueFinal = def.validateInput ? def.validateInput(textbox.value) : textbox.value;
                     if (!valueFinal) return;
 
-                    // Reset textbox and button
+                    // Reset state
                     textbox.value = '';
                     btnAdd.disabled = true;
+                    textbox.focus();
 
                     // Append checkbox
                     const input = appendCheckbox(escapeHTML(valueFinal));
