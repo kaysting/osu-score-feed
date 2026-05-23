@@ -26,7 +26,7 @@ export default (score = {}, useClassicScore = false) => {
 
     return /*html*/ `
         <div class="entryCont new">
-            <a href="${score.url}" target="_blank" class="flex col">
+            <a href="${score.url}" target="_blank" class="full flex col">
                 <div class="map flex row gap-12 align-center justify-center">
                     <div class="inner flex row gap-12 align-center flex-grow">
                         <img src="${score.beatmapset.thumbnail_url}" alt="Beatmap image" class="thumbnail">

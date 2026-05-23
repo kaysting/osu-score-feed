@@ -111,6 +111,22 @@ const modOptions = Object.values(mods)
  */
 const filterDefs = [
     {
+        key: 'classic_scoring',
+        label: 'Classic scoring',
+        header: 'Use classic scoring',
+        type: 'bool',
+        default: false,
+        test: () => true
+    },
+    {
+        key: 'minimal',
+        label: 'Minimal',
+        header: 'Display minimal score cards',
+        type: 'bool',
+        default: false,
+        test: () => true
+    },
+    {
         key: 'modes',
         label: 'Mode',
         header: 'Modes',
@@ -200,14 +216,6 @@ const filterDefs = [
         type: 'bool',
         default: false,
         test: (score, value) => score.is_fc == value
-    },
-    {
-        key: 'classic_scoring',
-        label: 'Classic scoring',
-        header: 'Use classic scoring',
-        type: 'bool',
-        default: false,
-        test: () => true
     },
     {
         key: 'ranks',

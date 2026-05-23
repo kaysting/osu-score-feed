@@ -16,6 +16,13 @@
 }
 
 #scores a {
+    color: var(--c-text-default);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+#scores .full {
     color: inherit;
     border: 1px solid var(--c-border-default);
     border-radius: 16px;
@@ -27,14 +34,15 @@
     transition: 0.1s ease-in-out;
 }
 
-#scores a:hover {
+#scores .full:hover,
+#scores .minimal:hover {
     text-decoration: none;
     border-color: var(--c-action-primary);
     box-shadow: 0px 0px 0px 2px var(--c-action-primary);
     transition: none;
 }
 
-#scores a .pill {
+#scores .full .pill {
     --bg: #999;
     --fg: black;
     padding: 2px 6px;
@@ -48,94 +56,122 @@
     flex-shrink: 0;
 }
 
-#scores a .pill .symbol {
+#scores .full .pill .symbol {
     font-size: 18px;
     margin: -8px 0;
     margin-bottom: -9px;
 }
 
-#scores a .map {
+#scores .full .map {
     background: var(--c-bg-subsurface);
     border-bottom: 1px solid var(--c-border-default);
     padding: 8px;
 }
 
-#scores a .map .thumbnail {
+#scores .full .map .thumbnail {
     width: 54px;
     height: 54px;
     border-radius: 12px;
 }
 
-#scores a .map .mode {
+#scores .full .map .mode {
     width: 16px;
     height: 16px;
 }
 
-#scores a .map .status.ranked,
-#scores a .map .status.approved {
+#scores .full .map .status.ranked,
+#scores .full .map .status.approved {
     --bg: hsl(90, 100%, 70%);
 }
 
-#scores a .map .status.loved {
+#scores .full .map .status.loved {
     --bg: hsl(340, 100%, 70%);
 }
 
-#scores a .map .status.qualified {
+#scores .full .map .status.qualified {
     --bg: hsl(200, 100%, 70%);
 }
 
-#scores a .map .status.pending {
+#scores .full .map .status.pending {
     --bg: hsl(30, 100%, 70%);
 }
 
-#scores a .map .mods img {
+#scores .full .map .mods img {
     height: 24px;
 }
 
-#scores a .score {
+#scores .full .score {
     padding: 8px;
 }
 
-#scores a .score .avatar {
+#scores .full .score .avatar {
     width: 36px;
     height: 36px;
     border-radius: 8px;
 }
 
-#scores a .score .flag {
+#scores .full .score .flag {
     height: 14px;
     border-radius: 4px;
 }
 
-#scores a .score .rank {
+#scores .full .score .rank {
     height: 24px;
 }
 
-#scores a .score .stat {
+#scores .full .score .stat {
     display: flex;
     flex-direction: column;
     gap: 4px;
     white-space: nowrap;
 }
 
-#scores a .score .stat .name {
+#scores .full .score .stat .name {
     font-size: 12px;
     color: var(--c-text-muted);
     font-weight: 600;
 }
 
-#scores a .score .stat .value {
+#scores .full .score .stat .value {
     font-size: 18px;
     color: var(--c-text-bright);
     font-weight: 400;
 }
 
-#scores a .score .stat .value.max {
+#scores .full .score .stat .value.max {
     color: var(--c-success-70);
 }
 
-#scores a .score .stat .value.na {
+#scores .full .score .stat .value.na {
     color: var(--c-text-muted);
+}
+
+#scores .minimal {
+    padding: 8px;
+    border: 1px solid var(--c-border-default);
+    border-radius: 16px;
+    transition: 0.1s ease-in-out;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--c-bg-subsurface);
+}
+
+#scores .minimal .mode,
+#scores .minimal .rank,
+#scores .minimal .mods img {
+    height: 18px;
+}
+
+#scores .minimal .map {
+    line-height: 1.2;
+}
+
+#scores .minimal .acc {
+    width: 65px;
+}
+
+#scores .minimal .pp {
+    width: 80px;
 }
 
 #filterEditor {
@@ -153,7 +189,7 @@
         grid-template-columns: 1fr;
     }
 
-    #scores .score {
+    #scores .full .score {
         display: grid;
         grid-template-columns: 1fr auto;
         grid-template-areas:
@@ -164,17 +200,17 @@
         gap: 12px;
     }
 
-    #scores .score .user {
+    #scores .full .score .user {
         grid-area: user;
         width: 100%;
     }
 
-    #scores .score .rankCont {
+    #scores .full .score .rankCont {
         grid-area: rank;
         justify-self: end;
     }
 
-    #scores .score .stats {
+    #scores .full .score .stats {
         grid-area: stats;
         flex-wrap: wrap;
         justify-content: space-evenly;
@@ -182,18 +218,31 @@
         gap: 16px;
     }
 
-    #scores .score .stats .stat {
+    #scores .full .score .stats .stat {
         align-items: center;
     }
 }
 
 @media (max-width: 600px) {
-    #scores .map {
+    #scores .full .map {
         flex-direction: column;
     }
 
-    #scores .map .inner {
+    #scores .full .map .inner {
         width: 100%;
+    }
+
+    #scores .minimal .inner {
+        flex-direction: column;
+        align-items: unset;
+    }
+
+    #scores .minimal .mods {
+        justify-content: start;
+    }
+
+    #scores .minimal .acc {
+        text-align: left;
     }
 }
 

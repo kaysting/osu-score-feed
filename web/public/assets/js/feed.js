@@ -1,5 +1,6 @@
 import filterDefs from './config/feedFilterDefinitions.js';
-import buildScoreHTML from './components/scoreCard.js';
+import buildFullScoreHTML from './components/scoreCard.js';
+import buildMinimalScoreHTML from './components/scoreCardMinimal.js';
 import updateUserFiltersInModal from './components/filterEditorModal.js';
 
 // Get elements
@@ -143,7 +144,8 @@ const displayNextScore = () => {
         elEmpty.remove();
         // Append the score and init image loading states
         const useClassicScoring = userFilters.classic_scoring ?? defaultFilters.classic_scoring;
-        const html = buildScoreHTML(score, useClassicScoring);
+        const useMinimalCards = userFilters.minimal ?? defaultFilters.minimal;
+        const html = useMinimalCards ? buildMinimalScoreHTML(score) : buildFullScoreHTML(score, useClassicScoring);
         elFeed.insertAdjacentHTML('afterbegin', html);
         const el = elFeed.firstElementChild;
         initImageLoadStates(el);
