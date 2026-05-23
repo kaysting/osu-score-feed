@@ -19,7 +19,7 @@ export default userFiltersOld =>
             elForm.insertAdjacentHTML(
                 'beforeend',
                 /*html*/ `
-                <section id="filterEditor-${def.key}" class="card flex row align-center flex-wrap gap-12" style="padding: 16px 12px">
+                <section id="filterEditor-${def.key}" class="card gap-12" style="padding: 16px 12px">
                     <h3 class="no-margin text-16 text-medium text-secondary flex-grow">${def.header || def.label}</h3>
                 </section>
             `
@@ -28,8 +28,9 @@ export default userFiltersOld =>
 
             // Make certain types take up the full width
             if (['set', 'string'].includes(def.type)) {
-                elSection.classList.remove('align-center');
-                elSection.classList.add('fullWidth', 'col');
+                elSection.classList.add('fullWidth', 'grid');
+            } else {
+                elSection.classList.add('flex', 'row', 'align-center', 'flex-wrap');
             }
 
             // Function to handle changes within checkbox containers
