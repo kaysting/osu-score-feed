@@ -25,9 +25,9 @@ module.exports = app => {
     app.locals.title = 'Feed';
     app.locals.metaSiteName = 'osu!feed';
     app.locals.metaTitle = 'Real-time osu! score feed';
-    app.locals.metaDescription = `View and filter a live feed of new osu! scores. Limit your feed to certain players, maps, modes, mods, pp, and more.`;
+    app.locals.metaDescription = `View and filter a live feed of new osu! scores. Limit your feed to certain modes, mods, pp, players, maps, and more.`;
     app.locals.metaThemeColor = '#ebadcc';
-    app.locals.metaImage = '';
+    app.locals.metaImage = '/assets/images/social.png';
 
     // Log requests
     app.use((req, res, next) => {

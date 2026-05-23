@@ -1,5 +1,9 @@
 # osu-score-feed
 
-A live feed logging osu! scores as they're submitted to the osu! servers, with options to filter only scores in a specific mode, with specific mods, from specific users, or worth more than a certain pp value.
+A live osu! score feed that logs newly submitted osu! scores, with a versatile filtering system.
 
-This project builds on top of [osu-score-cache](https://osc.kaysting.dev), a real-time WebSocket that broadcasts newly submitted osu! scores. That project intentionally only serves raw score data. osu-score-feed takes the raw data returned by osu-score-cache, fetches additional user/beatmap metadata, and wraps it up into a nice, user-friendly webpage.
+![Social Image](/web/public/assets/images/social.png)
+
+This project builds on top of [osu-score-cache](https://osc.kaysting.dev), a real-time WebSocket that broadcasts raw data for newly submitted osu! scores. osu-score-feed takes the raw data feed from oSC, fetches additional user/beatmap metadata, and rebroadcasts it on its own socket for consumption by the webapp or devs needing a dead simple score feed solution.
+
+Documentation for the socket's broadcast format will be added soon.
