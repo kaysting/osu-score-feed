@@ -152,4 +152,51 @@
     #filterEditor {
         grid-template-columns: 1fr;
     }
+
+    #scores .score {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "user rank"
+            "stats stats";
+        gap: 12px;
+        align-items: center;
+        gap: 12px;
+    }
+
+    #scores .score .user {
+        grid-area: user;
+        width: 100%;
+    }
+
+    #scores .score .rankCont {
+        grid-area: rank;
+        justify-self: end;
+    }
+
+    #scores .score .stats {
+        grid-area: stats;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        width: 100%;
+        gap: 16px;
+    }
+
+    #scores .score .stats .stat {
+        align-items: center;
+    }
+}
+
+@media (max-width: 600px) {
+    #scores .map {
+        flex-direction: column;
+    }
+
+    #scores .map .inner {
+        width: 100%;
+    }
+}
+
+img {
+    flex-shrink: 0;
 }

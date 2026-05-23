@@ -18,7 +18,7 @@ export default score => {
             `;
         }
         modsHtml = /*html*/ `
-            <div class="mods flex gap-4 flex-wrap">
+            <div class="mods flex gap-4 flex-wrap justify-end">
                 ${modsHtml}
             </div>
         `;
@@ -27,31 +27,33 @@ export default score => {
     return /*html*/ `
         <div class="entryCont new">
             <a href="${score.url}" target="_blank" class="flex col">
-                <div class="map flex row gap-12 align-center">
-                    <img src="${score.beatmapset.thumbnail_url}" alt="Beatmap image" class="thumbnail">
-                    <div class="flex col gap-4 flex-grow">
-                        <div class="flex row gap-8 align-center">
-                            <span class="pill status ${score.beatmap.status}">${score.beatmap.status.toUpperCase()}</span>
-                            <span class="artist text-12 text-medium">${escapeHTML(score.beatmapset.artist)}</span>
-                        </div>
-                        <span class="title text-14 text-medium text-bright">${escapeHTML(score.beatmapset.title)}</span>
-                        <div class="flex row gap-8 align-center">
-                            <img src="/assets/images/ruleset-icons/${score.mode}.svg" alt="Mode: ${score.mode}" class="mode">
-                            <span class="pill stars flex row gap-4 align-center" style="--bg: ${color.bg}; --fg: ${color.fg}">
-                                <span class="symbol filled">star</span>
-                                <span>${score.beatmap.stars.toFixed(2)}</span>
-                            </span>
-                            <span class="version text-12 text-semibold" style="color: ${score.beatmap.stars > 6.7 ? color.fg : color.bg}">
-                                ${escapeHTML(score.beatmap.version)}
-                            </span>
+                <div class="map flex row gap-12 align-center justify-center">
+                    <div class="inner flex row gap-12 align-center flex-grow">
+                        <img src="${score.beatmapset.thumbnail_url}" alt="Beatmap image" class="thumbnail">
+                        <div class="flex col gap-4">
+                            <div class="flex row gap-8 align-center">
+                                <span class="pill status ${score.beatmap.status}">${score.beatmap.status.toUpperCase()}</span>
+                                <span class="artist text-12 text-medium">${escapeHTML(score.beatmapset.artist)}</span>
+                            </div>
+                            <span class="title text-14 text-medium text-bright">${escapeHTML(score.beatmapset.title)}</span>
+                            <div class="flex row gap-8 align-center">
+                                <img src="/assets/images/ruleset-icons/${score.mode}.svg" alt="Mode: ${score.mode}" class="mode">
+                                <span class="pill stars flex row gap-4 align-center" style="--bg: ${color.bg}; --fg: ${color.fg}">
+                                    <span class="symbol filled">star</span>
+                                    <span>${score.beatmap.stars.toFixed(2)}</span>
+                                </span>
+                                <span class="version text-12 text-semibold" style="color: ${score.beatmap.stars > 6.7 ? color.fg : color.bg}">
+                                    ${escapeHTML(score.beatmap.version)}
+                                </span>
+                            </div>
                         </div>
                     </div>
                     ${modsHtml}
                 </div>
                 <div class="score flex gap-24 align-center">
-                    <div class="flex gap-12 align-center flex-grow">
+                    <div class="user flex gap-12 align-center flex-grow">
                         <img src="${score.user.avatar_url}" alt="${score.user.name}'s profile picture" class="avatar">
-                        <div class="flex col gap-4 justify-center">
+                        <div class="flex col gap-4 justify-center flex-grow">
                             <span class="username text-medium text-15">${escapeHTML(score.user.name)}</span>
                             <div class="flex gap-4 flags">
                                 <img
@@ -68,7 +70,7 @@ export default score => {
                             </div>
                         </div>
                     </div>
-                    <div class="stats flex gap-24">
+                    <div class="stats flex" style="gap: 8px 24px">
                         <div class="stat">
                             <div class="name">Score</div>
                             <div class="value">${score.score_standardized.toLocaleString()}</div>
@@ -94,7 +96,7 @@ export default score => {
                             <div class="value ${!score.pp ? 'na' : ''}">${Math.round(score.pp ?? 0).toLocaleString()}</div>
                         </div>
                     </div>
-                    <div class="flex justify-center">
+                    <div class="rankCont flex justify-center">
                         <img src="/assets/images/ranks/${score.rank}.svg" alt="${score.rank} rank" class="rank">
                     </div>
                 </div>
