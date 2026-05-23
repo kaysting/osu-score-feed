@@ -142,7 +142,9 @@ const displayNextScore = () => {
         // Remove the empty element
         elEmpty.remove();
         // Append the score and init image loading states
-        elFeed.insertAdjacentHTML('afterbegin', buildScoreHTML(score));
+        const useClassicScoring = userFilters.classic_scoring ?? defaultFilters.classic_scoring;
+        const html = buildScoreHTML(score, useClassicScoring);
+        elFeed.insertAdjacentHTML('afterbegin', html);
         const el = elFeed.firstElementChild;
         initImageLoadStates(el);
 

@@ -1,7 +1,7 @@
 import { starsToColor } from '../utils.js';
 import mods from '../data/mods.js';
 
-export default score => {
+export default (score = {}, useClassicScore = false) => {
     const color = starsToColor(score.beatmap.stars);
 
     let modsHtml = '';
@@ -73,7 +73,7 @@ export default score => {
                     <div class="stats flex" style="gap: 8px 24px">
                         <div class="stat">
                             <div class="name">Score</div>
-                            <div class="value">${score.score_standardized.toLocaleString()}</div>
+                            <div class="value">${(useClassicScore ? score.score_classic : score.score_standardized).toLocaleString()}</div>
                         </div>
                         <div class="stat">
                             <div class="name">Accuracy</div>

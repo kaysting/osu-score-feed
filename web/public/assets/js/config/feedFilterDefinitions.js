@@ -202,6 +202,14 @@ const filterDefs = [
         test: (score, value) => score.is_fc == value
     },
     {
+        key: 'classic_scoring',
+        label: 'Classic scoring',
+        header: 'Use classic scoring',
+        type: 'bool',
+        default: false,
+        test: () => true
+    },
+    {
         key: 'ranks',
         label: 'Rank',
         header: 'Ranks',
