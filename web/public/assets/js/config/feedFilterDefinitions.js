@@ -91,12 +91,13 @@ const ranks = [
 
 const modOptions = Object.values(mods)
     .sort((a, b) => {
-        const types = ['DifficultyReduction', 'DifficultyIncrease', 'Fun', 'Conversion', 'Automation', 'System'];
+        const types = ['DifficultyReduction', 'DifficultyIncrease', 'Automation', 'Conversion', 'Fun', 'System'];
         // Sort by type and then acronym alphabetically
         const typeDiff = types.indexOf(a.type) - types.indexOf(b.type);
         if (typeDiff != 0) return typeDiff;
         return a.acronym > b.acronym ? 1 : -1;
     })
+    .filter(m => m.isPlayable)
     .map(mod => ({
         label: mod.name,
         value: mod.acronym.toUpperCase(),

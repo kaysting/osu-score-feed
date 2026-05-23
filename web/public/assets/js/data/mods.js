@@ -8,6 +8,7 @@ for (const mode of data) {
                 acronym: mod.Acronym,
                 name: mod.Name,
                 type: mod.Type,
+                isPlayable: mod.UserPlayable,
                 settings: {}
             };
         for (const setting of mod.Settings) {
