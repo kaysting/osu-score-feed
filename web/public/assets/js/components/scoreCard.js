@@ -72,7 +72,7 @@ export default (score = {}, useClassicScore = false) => {
                     </div>
                     <div class="stats flex" style="gap: 8px 24px">
                         <div class="stat">
-                            <div class="name">Score</div>
+                            <div class="name">${useClassicScore ? 'Classic score' : 'Score'}</div>
                             <div class="value">${(useClassicScore ? score.score_classic : score.score_standardized).toLocaleString()}</div>
                         </div>
                         <div class="stat">
