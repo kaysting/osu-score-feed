@@ -1,6 +1,6 @@
 # osu-score-feed
 
-A live osu! score feed that logs newly submitted osu! scores, with a versatile filtering system.
+A live feed of newly submitted osu! scores with advanced filtering capabilities.
 
 ![Social Image](/web/public/assets/images/social.png)
 
