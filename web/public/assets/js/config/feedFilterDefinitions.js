@@ -245,7 +245,8 @@ const filterDefs = [
         header: 'Players',
         type: 'set',
         default: new Set(),
-        test: (score, set) => set.size === 0 || set.has(score.user.id.toString()) || set.has(score.user.name),
+        test: (score, set) =>
+            set.size === 0 || set.has(score.user.id.toString()) || set.has(score.user.id) || set.has(score.user.name),
         placeholder: 'Enter user profile URL, ID, or name',
         validateInput: input => {
             // Attempt to pull ID out of a profile URL
