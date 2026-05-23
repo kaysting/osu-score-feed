@@ -193,12 +193,17 @@ client.on('scores', scores => {
     // Scores must pass all filters to be displayed
     const activeFilters = { ...defaultFilters, ...userFilters };
     let passCount = 0;
+    const filterResults = [];
     for (const score of scores) {
         let passed = true;
-        for (const filter of filterDefs) {
-            const value = activeFilters[filter.key];
-            if (!filter.test(score, value)) {
+        for (const def of filterDefs) {
+            const value = activeFilters[def.key];
+            if (!def.test(score, value)) {
                 passed = false;
+                filterResults.push({
+                    failed: def.key,
+                    score: `${score.user.name} on ${score.beatmapset.title}`
+                });
                 break;
             }
         }
@@ -206,7 +211,7 @@ client.on('scores', scores => {
         scoresPendingDisplay.push(score);
         passCount++;
     }
-    console.log(`${passCount} new scores passed active filters:`, activeFilters);
+    console.log(`${passCount} new scores passed active filters`, filterResults);
 
     // Remove old scores from queue if the queue is too long
     while (scoresPendingDisplay.length > 75) {

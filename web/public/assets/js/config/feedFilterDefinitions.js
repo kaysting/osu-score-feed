@@ -144,7 +144,7 @@ const filterDefs = [
         type: 'number',
         default: 0,
         userDefault: 95,
-        test: (score, value) => score.accuracy > value,
+        test: (score, value) => score.accuracy >= value,
         getDisplayValue: value => `${value}%`
     },
     {
@@ -153,7 +153,7 @@ const filterDefs = [
         header: 'Max accuracy',
         type: 'number',
         default: 100,
-        test: (score, value) => score.accuracy < value,
+        test: (score, value) => score.accuracy <= value,
         getDisplayValue: value => `${value}%`
     },
     {
@@ -163,7 +163,7 @@ const filterDefs = [
         type: 'number',
         default: 0,
         userDefault: 5,
-        test: (score, value) => score.beatmap.stars > value
+        test: (score, value) => score.beatmap.stars >= value
     },
     {
         key: 'stars_max',
@@ -171,7 +171,7 @@ const filterDefs = [
         header: 'Max stars',
         type: 'number',
         default: 9999,
-        test: (score, value) => score.beatmap.stars < value
+        test: (score, value) => score.beatmap.stars <= value
     },
     {
         key: 'pp_min',
@@ -182,7 +182,7 @@ const filterDefs = [
         userDefault: 200,
         test: (score, value) => {
             if (value <= 0 && score.pp === null) return true;
-            return score.pp > value;
+            return score.pp >= value;
         }
     },
     {
@@ -191,7 +191,7 @@ const filterDefs = [
         header: 'Max pp',
         type: 'number',
         default: 9999,
-        test: (score, value) => score.pp < value
+        test: (score, value) => score.pp <= value
     },
     {
         key: 'length_min',
@@ -199,7 +199,7 @@ const filterDefs = [
         header: 'Min length (secs)',
         type: 'number',
         default: 0,
-        test: (score, value) => score.beatmap.length > value
+        test: (score, value) => score.beatmap.length >= value
     },
     {
         key: 'length_max',
@@ -207,7 +207,7 @@ const filterDefs = [
         header: 'Max length (secs)',
         type: 'number',
         default: 9999,
-        test: (score, value) => score.beatmap.length < value
+        test: (score, value) => score.beatmap.length <= value
     },
     {
         key: 'fcs_only',
@@ -215,7 +215,8 @@ const filterDefs = [
         header: 'Only show FCs',
         type: 'bool',
         default: false,
-        test: (score, value) => score.is_fc == value
+        // If filter is set to true, return value of is_fc, otherwise return true
+        test: (score, value) => (value ? score.is_fc : true)
     },
     {
         key: 'ranks',
