@@ -71,10 +71,11 @@ const statuses = [
     { label: 'Ranked', value: 'ranked' },
     { label: 'Approved', value: 'approved' },
     { label: 'Loved', value: 'loved' },
-    { label: 'Qualified', value: 'qualified' },
-    { label: 'Pending', value: 'pending' },
-    { label: 'WIP', value: 'wip' },
-    { label: 'Graveyard', value: 'graveyard' }
+    { label: 'Qualified', value: 'qualified' }
+    // Apparently oSC and by extension the osu! API /scores endpoint doesn't return unranked scores
+    //{ label: 'Pending', value: 'pending' },
+    //{ label: 'WIP', value: 'wip' },
+    //{ label: 'Graveyard', value: 'graveyard' }
 ];
 
 const ranksIconOnly = true;
