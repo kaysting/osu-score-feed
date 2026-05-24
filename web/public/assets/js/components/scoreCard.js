@@ -1,4 +1,4 @@
-import { starsToColor } from '../utils.js';
+import { starsToColor, floorToFixed } from '../utils.js';
 import mods from '../data/mods.js';
 
 export default (score = {}, useClassicScore = false) => {
@@ -40,7 +40,7 @@ export default (score = {}, useClassicScore = false) => {
                                 <img src="/assets/images/ruleset-icons/${score.mode}.svg" alt="Mode: ${score.mode}" class="mode">
                                 <span class="pill stars flex row gap-4 align-center" style="--bg: ${color.bg}; --fg: ${color.fg}">
                                     <span class="symbol filled">star</span>
-                                    <span>${score.beatmap.stars.toFixed(2)}</span>
+                                    <span>${floorToFixed(score.beatmap.stars, 2)}</span>
                                 </span>
                                 <span class="version text-12 text-semibold" style="color: ${score.beatmap.stars > 6.7 ? color.fg : color.bg}">
                                     ${escapeHTML(score.beatmap.version)}

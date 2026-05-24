@@ -98,3 +98,9 @@ export function areSetsEqual(a, b) {
 
     return true;
 }
+
+// Thanks Gemini
+export function floorToFixed(num, decimals = 0) {
+    const flooredNum = Number(`${Math.floor(`${num}e${decimals}`)}e-${decimals}`);
+    return flooredNum.toFixed(decimals);
+}
