@@ -33,16 +33,16 @@ export default (score = {}, useClassicScore = false) => {
                         <div class="flex col gap-4">
                             <div class="flex row gap-8 align-center">
                                 <span class="pill status ${score.beatmap.status}">${score.beatmap.status.toUpperCase()}</span>
-                                <span class="artist text-12 text-medium">${escapeHTML(score.beatmapset.artist)}</span>
+                                <span class="artist text-size-12 text-weight-500">${escapeHTML(score.beatmapset.artist)}</span>
                             </div>
-                            <span class="title text-14 text-medium text-bright">${escapeHTML(score.beatmapset.title)}</span>
+                            <span class="title text-size-14 text-weight-500 color-bright">${escapeHTML(score.beatmapset.title)}</span>
                             <div class="flex row gap-8 align-center">
                                 <img src="/assets/images/ruleset-icons/${score.mode}.svg" alt="Mode: ${score.mode}" class="mode">
                                 <span class="pill stars flex row gap-4 align-center" style="--bg: ${color.bg}; --fg: ${color.fg}">
                                     <span class="symbol filled">star</span>
                                     <span>${floorToFixed(score.beatmap.stars, 2)}</span>
                                 </span>
-                                <span class="version text-12 text-semibold" style="color: ${score.beatmap.stars > 6.7 ? color.fg : color.bg}">
+                                <span class="version text-size-12 text-weight-600" style="color: ${score.beatmap.stars > 6.7 ? color.fg : color.bg}">
                                     ${escapeHTML(score.beatmap.version)}
                                 </span>
                             </div>
@@ -54,7 +54,7 @@ export default (score = {}, useClassicScore = false) => {
                     <div class="user flex gap-12 align-center flex-grow">
                         <img src="${score.user.avatar_url}" alt="${score.user.name}'s profile picture" class="avatar">
                         <div class="flex col gap-4 justify-center flex-grow">
-                            <span class="username text-medium text-15">${escapeHTML(score.user.name)}</span>
+                            <span class="username text-weight-500 text-size-15">${escapeHTML(score.user.name)}</span>
                             <div class="flex gap-4 flags">
                                 <img
                                     src="/assets/images/flags/${score.user.country.code.toUpperCase()}.png"
@@ -88,7 +88,7 @@ export default (score = {}, useClassicScore = false) => {
                         <div class="stat">
                             <div class="name">Max Combo</div>
                             <div class="value ${score.is_fc ? 'max' : ''}">
-                                ${score.combo.toLocaleString()}x ${!score.is_fc ? /*html*/ `<span class="text-muted">/ ${score.beatmap.max_combo.toLocaleString()}x</span>` : ''}
+                                ${score.combo.toLocaleString()}x ${!score.is_fc ? /*html*/ `<span class="color-muted">/ ${score.beatmap.max_combo.toLocaleString()}x</span>` : ''}
                             </div>
                         </div>
                         <div class="stat">

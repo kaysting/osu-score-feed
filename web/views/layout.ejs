@@ -21,8 +21,13 @@
 
         <link rel="icon" href="/assets/images/logo.png">
 
-        <link rel="stylesheet" href="https://kaysting.dev/assets/css/base.css" />
-        <link rel="stylesheet" href="https://kaysting.dev/assets/css/utils.css" />
+        <!-- Load v4 framework -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="preconnect" href="https://src.kaysting.dev" crossorigin />
+        <link rel="stylesheet" href="https://src.kaysting.dev/v4/css/base.css" />
+        <link rel="stylesheet" href="https://src.kaysting.dev/v4/css/utils.css" />
+        <script src="https://src.kaysting.dev/v4/js/base.js" defer></script>
 
         <style>
             :root {
@@ -32,8 +37,6 @@
                 --c-accent-sat: 70%;
             }
         </style>
-
-        <script src="https://kaysting.dev/assets/js/base.js"></script>
     </head>
     <body>
         <%- body %>

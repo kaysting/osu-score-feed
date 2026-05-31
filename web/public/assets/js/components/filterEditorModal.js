@@ -334,7 +334,7 @@ export default userFiltersOld =>
                 'beforeend',
                 /*html*/ `
                 <section id="filterEditor-${def.key}" class="card gap-12" style="padding: 16px 12px">
-                    <h3 class="no-margin text-16 text-medium text-secondary flex-grow">${def.header || def.label}</h3>
+                    <h3 class="no-margin text-size-16 text-weight-500 color-secondary flex-grow">${def.header || def.label}</h3>
                 </section>
             `
             );

@@ -32,16 +32,16 @@ export default score => {
                 <div class="inner flex row gap-8 align-center flex-grow">
                     <span class="map flex-grow">
                         <span>
-                            <span class="text-medium">${escapeHTML(score.beatmapset.title)}</span>
-                            <span class="text-12">by ${escapeHTML(score.beatmapset.artist)}</span>
+                            <span class="text-weight-500">${escapeHTML(score.beatmapset.title)}</span>
+                            <span class="text-size-12">by ${escapeHTML(score.beatmapset.artist)}</span>
                         </span>
-                        <br><span class="text-12 text-medium" style="color: ${score.beatmap.stars > 6.7 ? color.fg : color.bg}">${escapeHTML(score.beatmap.version)}</span>
-                        <br><span class="text-12">Set by <span class="text-semibold">${escapeHTML(score.user.name)}</span></span>
+                        <br><span class="text-size-12 text-weight-500" style="color: ${score.beatmap.stars > 6.7 ? color.fg : color.bg}">${escapeHTML(score.beatmap.version)}</span>
+                        <br><span class="text-size-12">Set by <span class="text-weight-600">${escapeHTML(score.user.name)}</span></span>
                     </span>
                     ${modsHtml}
-                    <div class="score flex text-16 flex-no-shrink" style="gap: 8px 16px;">
+                    <div class="score flex text-size-16 flex-no-shrink" style="gap: 8px 16px;">
                         <div class="flex-no-shrink text-right acc">${score.accuracy.toFixed(2)}%</div>
-                        <div class="flex-no-shrink text-medium text-accent pp">${Math.round(score.pp).toLocaleString()}pp</div>
+                        <div class="flex-no-shrink text-weight-500 color-accent pp">${Math.round(score.pp).toLocaleString()}pp</div>
                     </div>
                 </div>
             </a>
